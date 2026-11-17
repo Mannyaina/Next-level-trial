@@ -1,0 +1,5 @@
+Libraries used to read flyers, PDFs and slides on the phone (nothing is uploaded anywhere):
+- pdf.js 3.11.174 (Apache-2.0) https://github.com/mozilla/pdf.js
+- JSZip 3.10.1 (MIT or GPLv3) https://github.com/Stuk/jszip
+- Tesseract.js 5.1.1 and tesseract.js-core 5.1.1 (Apache-2.0) https://github.com/naptha/tesseract.js
+- Tesseract English data 4.0.0 best_int (Apache-2.0) https://github.com/tesseract-ocr/tessdata_best

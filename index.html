@@ -17,7 +17,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261117171013";window.NL_TRIAL_VER=V;
+(function(){var V="20261117172107";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -315,16 +315,21 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .ef-rm{flex:none;padding:6px 12px!important;min-height:36px}
 /* The bottom bar's colour carries on below it, so nothing shows through underneath on any iPhone (home bar, in-app browsers, Home Screen apps) */
 .tabs::after{content:"";position:absolute;left:0;right:0;top:100%;height:200px;background:inherit;pointer-events:none}
-#ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 92px);z-index:300;width:46px;height:46px;border-radius:50%;background:#0B2033;box-shadow:0 10px 26px -8px rgba(11,32,51,.55),0 0 0 4px rgba(254,248,230,.9);display:grid;place-items:center;transform:translate(-50%,-60px);opacity:0;pointer-events:none}
-#ptr .ptr-ring{position:absolute;inset:0;width:46px;height:46px;transform:rotate(-90deg)}
-#ptr .ptr-bg{fill:none;stroke:rgba(254,248,230,.18);stroke-width:3}
-#ptr .ptr-fg{fill:none;stroke:#E7C27D;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .05s linear}
-#ptr .ptr-nl{font:700 15px/1 "Cormorant Garamond",Georgia,serif;color:#FEF8E6;letter-spacing:-.02em}
-#ptr.ready{box-shadow:0 10px 26px -8px rgba(11,32,51,.55),0 0 0 4px #E7C27D}
+#ptr{position:fixed;left:50%;top:60px;z-index:300;width:30px;height:30px;border-radius:50%;background:var(--surface);box-shadow:0 2px 10px -2px rgba(11,32,51,.22);display:grid;place-items:center;transform:translate(-50%,-40px);opacity:0;pointer-events:none}
+#ptr .ptr-ring{width:22px;height:22px;transform:rotate(-90deg)}
+#ptr .ptr-fg{fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;transition:stroke .2s}
+#ptr.ready .ptr-fg{stroke:var(--accent)}
 #ptr.anim,#ptr-l.anim{transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
-#ptr.spin .ptr-ring{animation:ptrspin .9s linear infinite}#ptr.spin .ptr-fg{stroke-dasharray:60 200!important;stroke-dashoffset:0!important}
-#ptr-l{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 92px);z-index:300;transform:translate(-50%,-4px);opacity:0;pointer-events:none;padding:5px 12px;border-radius:999px;background:#0B2033;color:#FEF8E6;font-weight:700;font-size:12.5px;white-space:nowrap}
+#ptr.spin .ptr-ring{animation:ptrspin .7s linear infinite}#ptr.spin .ptr-fg{stroke:var(--accent);stroke-dasharray:30 60!important;stroke-dashoffset:0!important}
+#ptr-l{display:none}
 @keyframes ptrspin{from{transform:rotate(-90deg)}to{transform:rotate(270deg)}}
+.af-start{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:16px;border:1.5px dashed var(--accent);background:var(--accent-soft,var(--soft));color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.af-start svg{width:22px;height:22px;flex:none;color:var(--accent)}.af-start span{display:flex;flex-direction:column;gap:1px;min-width:0}.af-start b{font-size:15px}.af-start small{font-size:12.5px;color:var(--muted)}
+.af-status{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--soft);font-size:13.5px;line-height:1.4}
+.af-status.done{background:var(--good-soft,#DFF0E7)}.af-status.done svg{width:18px;height:18px;flex:none;color:var(--good,#2F7D5B)}.af-status small{display:block;color:var(--muted);font-size:12px}
+.af-undo{margin-left:auto;flex:none;border:0;background:transparent;color:var(--accent);font:700 13.5px inherit;padding:6px;cursor:pointer}
+.af-spin{width:16px;height:16px;flex:none;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:ptrspin .8s linear infinite}
+input.af-new,textarea.af-new{box-shadow:0 0 0 2px #E7C27D;background-color:rgba(231,194,125,.12)}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
 .notes{display:flex;flex-direction:column;gap:14px;font-size:16px;background:var(--surface);border-radius:18px;padding:20px}
@@ -1418,6 +1423,7 @@ const P={
  opp:'<path d="M3 7h18v13H3z"/><path d="M8 7V4h8v3"/>',
  check:'<path d="m5 12 5 5 9-10"/>',
  slides:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+ wand:'<path d="m15 4 5 5L9 20H4v-5z"/><path d="M13 6l5 5"/><path d="M4 3v4M2 5h4M19 15v4M17 17h4"/>',
  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
  mynotes:'<path d="M5 4h9M5 9h7M5 14h4"/><path d="m13 20 .8-3.6 6-6a1.6 1.6 0 0 1 2.3 2.3l-6 6z"/>',
@@ -1618,6 +1624,26 @@ function viewDoc(u,n,t){const old=$("#fview");if(old)old.remove();const v=docume
   v.innerHTML=`<div class="fv-bar"><button class="fv-b" data-act="fv-close" aria-label="Close">${ic("plus",2.2)}</button><span class="fv-n">${esc(n||"")}</span><button class="fv-b" data-act="file-share" data-u="${esc(u)}" data-n="${esc(n||"")}" data-t="${esc(t||"")}" aria-label="Share">${ic("share",2)}</button></div><iframe class="fv-doc" src="${esc(u)}" title="${esc(n||"File")}"></iframe>`;
   document.body.appendChild(v);document.documentElement.classList.add("locked")}
 document.addEventListener("click",e=>{const fo=e.target.closest&&e.target.closest("a.fopen");if(!fo||!/^blob:/.test(fo.href))return;e.preventDefault();const r=fo.closest(".frow"),sb=r&&r.querySelector(".fshare");openFile(fo.href,sb?sb.dataset.n:"",sb?sb.dataset.t:"")},true);
+/* Read a flyer, PDF or slides on the phone and fill the empty boxes of the post form. Leaders check and change anything before posting. */
+function loadReader(){if(window.NLREAD)return Promise.resolve();if(loadReader.p)return loadReader.p;
+  loadReader.p=new Promise((res,rej)=>{const s=document.createElement("script");s.src="vendor/nlread/nlread.js";s.onload=res;s.onerror=()=>{loadReader.p=null;rej(new Error("reader"))};document.head.appendChild(s)});return loadReader.p}
+const AF_LABEL={series:"Series",title:"Title",name:"Who",date:"Date",time:"Start time",end:"End time",where:"Where",desc:"Details",scripture:"Scripture",body:"Outline",text:"Post",church:"Main church"};
+async function autoFill(file,r,col,sc,quiet){const st=r.querySelector("#ef-auto");if(!st)return;
+  const isImg=/^image\//.test(file.type||"");st.hidden=false;st.className="af-status busy";
+  st.innerHTML=`<span class="af-spin"></span><span>Reading ${esc(file.name)}…${isImg?" <small>Pictures take a few seconds the first time</small>":""}</span>`;
+  let out=null;try{await loadReader();out=await window.NLREAD.read(file,col)}catch(e){out=null}
+  if(!st.isConnected)return;
+  const keys=sc.f.map(x=>x[0]),filled=[],before={};
+  if(out)keys.forEach(k=>{const el=r.querySelector("#f-"+k);if(!el||out[k]==null||out[k]==="")return;
+    if(el.type==="checkbox"){if(out[k]&&!el.checked){before[k]=false;el.checked=true;filled.push(k)}return}
+    if(el.tagName==="SELECT")return;
+    if(String(el.value||"").trim())return;
+    before[k]=el.value;el.value=String(out[k]);el.classList.add("af-new");el.addEventListener("input",()=>el.classList.remove("af-new"),{once:true});filled.push(k)});
+  if(!filled.length){st.className="af-status";st.innerHTML=`<span>${quiet?"":"Couldn't spot any details in "+esc(file.name)+". Fill them in as normal; the file is still attached."}</span>`;if(quiet)st.hidden=true;return}
+  st.className="af-status done";
+  st.innerHTML=`${ic("check",2)}<span><b>Filled in from ${esc(file.name)}:</b> ${filled.map(k=>AF_LABEL[k]||k).join(", ")}. Check them and change anything before posting.</span><button type="button" class="af-undo">Undo</button>`;
+  st.querySelector(".af-undo").addEventListener("click",()=>{Object.entries(before).forEach(([k,v])=>{const el=r.querySelector("#f-"+k);if(!el)return;if(el.type==="checkbox")el.checked=v;else{el.value=v;el.classList.remove("af-new")}});st.hidden=true});
+  const firstEl=r.querySelector(".af-new");if(firstEl&&!quiet)firstEl.scrollIntoView({block:"center",behavior:"smooth"})}
 function dlUrl(u,n){return u+(u.includes("?")?"&":"?")+"download="+encodeURIComponent(n||"file")}
 function fileSheet(u,n,t){const img=/^image\//.test(t);
   openSheet(`<div class="sh-head"><h2 style="font-size:22px;overflow-wrap:anywhere">${esc(n||"File")}</h2><button class="icon-b" data-act="close" aria-label="Close">${ic("plus",2)}</button></div>
@@ -2162,7 +2188,7 @@ function editForm(col,id){
     return `<label class="f" for="${fid}">${l}<input type="${type}" id="${fid}" value="${esc(v||"")}"></label>`};
   const liveNote=col==="announcements"&&!id&&liveCount()>=MAX_LIVE?`<p class="hint" style="color:var(--warn)">There are already ${liveCount()} live announcements. Members see the newest ${MAX_LIVE}, so the oldest will drop out of view.</p>`:"";
   openSheet(`<span class="hint" style="font-weight:700">${id?"Edit":"New"}</span><h2>${sc.t}</h2>${sc.hint?`<p class="hint">${sc.hint}</p>`:""}${liveNote}
-   <form id="ef" style="display:flex;flex-direction:column;gap:12px">${sc.f.map(fld).join("")}<p class="hint" id="ef-err" hidden style="color:var(--bad)"></p>
+   <form id="ef" style="display:flex;flex-direction:column;gap:12px">${FILE_COLS.includes(col)?`<button type="button" class="af-start" data-af="pick">${ic("wand",2)}<span><b>${id?"Update from a flyer or slides":"Fill this in from a flyer or slides"}</b><small>Add the file and the details are filled in for you to check</small></span></button><div class="af-status" id="ef-auto" hidden role="status" aria-live="polite"></div>`:""}${sc.f.map(fld).join("")}<p class="hint" id="ef-err" hidden style="color:var(--bad)"></p>
    ${FILE_COLS.includes(col)?`<div class="fbox"><span class="fbox-l">Flyers and files</span><div id="ef-files" class="ef-files"></div>
      <label class="btn quiet small upl">${ic("plus",2)} Add a flyer or file<input type="file" id="ef-file" multiple accept="image/*,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt"></label>
      <span class="hint" style="font-weight:500">Images, PDFs and documents up to 20 MB. Members can open and share them, and anyone they send a file to can see it.</span></div>`:""}
@@ -2175,7 +2201,10 @@ let files=(cur.files||[]).slice(),removed=[],busy=0;
     drawFiles();
     if(fl)fl.addEventListener("click",e=>{const b=e.target.closest("[data-rm]");if(!b)return;const f=files.splice(Number(b.dataset.rm),1)[0];if(f)removed.push(...filePaths([f]));drawFiles()});
     const inp=r.querySelector("#ef-file");
+    const afBtn=r.querySelector('[data-af="pick"]');if(afBtn&&inp)afBtn.addEventListener("click",()=>{r.dataset.afWant="1";inp.click()});
     if(inp)inp.addEventListener("change",async()=>{const picked=[...inp.files];inp.value="";
+      const readable=picked.find(f=>/pdf|image\/|presentationml|wordprocessingml|^text\//.test(f.type||"")||/\.(pdf|png|jpe?g|webp|heic|pptx|docx|txt)$/i.test(f.name||""));
+      if(readable)autoFill(readable,r,col,sc,!!id||r.dataset.afWant!=="1");
       for(const file of picked){const ph={name:file.name,uploading:true};files.push(ph);busy++;drawFiles();
         try{const done=await uploadOne(file,col);files[files.indexOf(ph)]=done}catch(err){files.splice(files.indexOf(ph),1);toast(err&&/big/.test(err.message)?file.name+" is over 20 MB":"Couldn't upload "+file.name)}
         busy--;drawFiles()}});
@@ -2279,25 +2308,25 @@ let rq=0,lastScroll=0;
 /* Pull down from the top of any page to refresh: the page follows your finger, a ring fills, and on release the newest copy of the app loads */
 (function(){const sh=document.querySelector(".shell");if(!sh||!("ontouchstart" in window))return;
   const ind=document.createElement("div");ind.id="ptr";ind.setAttribute("aria-hidden","true");
-  ind.innerHTML='<svg class="ptr-ring" viewBox="0 0 48 48"><circle class="ptr-bg" cx="24" cy="24" r="20"/><circle class="ptr-fg" cx="24" cy="24" r="20"/></svg><span class="ptr-nl">NL</span>';
+  ind.innerHTML='<svg class="ptr-ring" viewBox="0 0 24 24"><circle class="ptr-fg" cx="12" cy="12" r="8"/></svg>';
   const lab=document.createElement("div");lab.id="ptr-l";lab.setAttribute("aria-hidden","true");document.body.appendChild(ind);document.body.appendChild(lab);
-  const fg=ind.querySelector(".ptr-fg"),C=2*Math.PI*20;fg.style.strokeDasharray=C;fg.style.strokeDashoffset=C;
-  let y0=null,dy=0,busy=false,buzzed=false;const MAX=120,GO=80;
+  const fg=ind.querySelector(".ptr-fg"),C=2*Math.PI*8;fg.style.strokeDasharray=C;fg.style.strokeDashoffset=C;
+  let y0=null,dy=0,busy=false,buzzed=false;const MAX=96,GO=70;
   const view=()=>document.getElementById("view");
   const blocked=()=>!!(document.querySelector("#sheet-root").innerHTML.trim()||document.getElementById("fview")||(document.getElementById("trialnav")&&!document.getElementById("trialnav").hidden)||document.getElementById("splash"));
   const set=d=>{const k=Math.min(1,d/GO),pull=Math.min(d,MAX);
-    const gap=pull*0.8;ind.style.transform=`translate(-50%,${Math.max(-60,gap/2-23)}px) scale(${0.6+0.4*k})`;ind.style.opacity=String(Math.min(1,d/24));
-    fg.style.strokeDashoffset=String(C*(1-k));ind.classList.toggle("ready",d>=GO);
+    const gap=pull*0.55;ind.style.transform=`translate(-50%,${Math.max(-40,gap/2-15)}px) rotate(${k*200}deg)`;ind.style.opacity=String(Math.min(1,d/30));
+    fg.style.strokeDashoffset=String(C*(1-0.82*k));ind.classList.toggle("ready",d>=GO);
     const v=view();if(v)v.style.transform=`translateY(${gap}px)`;
     if(d>=GO&&!buzzed){buzzed=true;try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}if(d<GO)buzzed=false};
   const reset=()=>{ind.classList.add("anim");lab.classList.add("anim");const v=view();if(v){v.style.transition="transform .3s cubic-bezier(.2,.8,.2,1)";v.style.transform=""}
-    ind.style.transform="translate(-50%,-60px)";ind.style.opacity="0";
+    ind.style.transform="translate(-50%,-40px)";ind.style.opacity="0";
     setTimeout(()=>{ind.classList.remove("anim");lab.classList.remove("anim");if(v)v.style.transition=""},320)};
   sh.addEventListener("touchstart",e=>{if(busy||sh.scrollTop>0||blocked()||e.touches.length!==1){y0=null;return}const tb=document.querySelector(".topbar");ind.style.top=((tb&&tb.getBoundingClientRect().bottom)||60)+"px";y0=e.touches[0].clientY;dy=0},{passive:true});
   sh.addEventListener("touchmove",e=>{if(y0==null)return;const raw=e.touches[0].clientY-y0;dy=raw>0?raw*0.6:0;if(sh.scrollTop>0){y0=null;reset();return}if(dy>0)set(dy)},{passive:true});
   const end=async()=>{if(y0==null)return;y0=null;if(dy<GO){reset();return}
-    busy=true;ind.classList.add("anim","spin");lab.classList.add("anim");ind.style.transform="translate(-50%,13px) scale(1)";
-    const v=view();if(v){v.style.transition="transform .3s ease";v.style.transform="translateY(72px)"}
+    busy=true;ind.classList.add("anim","spin");lab.classList.add("anim");ind.style.transform="translate(-50%,11px)";
+    const v=view();if(v){v.style.transition="transform .3s ease";v.style.transform="translateY(52px)"}
     try{sessionStorage.setItem("nl.splash","1")}catch(e){}
     const t0=Date.now(),go=()=>{if(go.done)return;go.done=true;location.reload()};setTimeout(go,2000);
     try{await Promise.race([fetch(location.pathname,{cache:"reload"}),new Promise(r=>setTimeout(r,1800))])}catch(e){}
