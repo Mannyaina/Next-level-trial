@@ -58,6 +58,7 @@ html{background:var(--bg)}
 /* Phones: the screen itself never scrolls; only the content area does. Keeps the bottom bar fixed on iPhone Home Screen apps. */
 @media (max-width:959px){
   html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  input,select,textarea{font-size:16px!important}
 }
 @media (max-width:959px){
   .shell{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
@@ -286,6 +287,7 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .jot-foot{margin-top:18px}
 .jot-del{color:var(--warn,#B3261E)}
 .ics-done{display:flex;gap:8px;align-items:flex-start;margin:0}.ics-done svg{width:16px;height:16px;flex:none;margin-top:3px;color:var(--good)}
+.linkbtn{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--accent);text-decoration:underline;cursor:pointer}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
 .notes{display:flex;flex-direction:column;gap:14px;font-size:16px;background:var(--surface);border-radius:18px;padding:20px}
@@ -1535,7 +1537,12 @@ function occRow(o){const d=pd(o.date);const g=o.src==="event"&&going(o.id);
 const catOf=o=>o.church?"church":"nl";
 function bdayRow(u,d){return `<div class="rw"><a class="r" href="#member-${esc(u)}" style="text-decoration:none"><span class="dt"><small>${DAYS[d.getDay()]}</small><b>${d.getDate()}</b></span><span style="min-width:0"><h3><i class="mk bd" aria-hidden="true"></i><span data-uid="${esc(u)}">…</span>'s birthday</h3><p>Birthday · tap to see their profile</p></span></a></div>`}
 function bdaysOn(d){const md=pad(d.getMonth()+1)+"-"+pad(d.getDate());return Object.entries(S.self.bdays).filter(([u,b])=>b&&b.show!==false&&b.md===md).map(([u])=>u)}
-function dayRows(d){const f=S.calF;let h=f==="bday"?"":occOn(d).filter(o=>f==="all"||catOf(o)===f).map(occRow).join("");if(f==="all"||f==="bday")h+=bdaysOn(d).map(u=>bdayRow(u,d)).join("");return h}
+function hiddenNote(d){const f=S.calF;if(f==="all")return '<p class="empty">Nothing on this day.</p>';const sv=S.calF;S.calF="all";const n=(dayRows(d).match(/class="rw"/g)||[]).length;S.calF=sv;
+  return n?`<p class="empty">${n} ${n===1?"thing is":"things are"} hidden by the filter. <button class="linkbtn" data-act="calf" data-k="all">Show all</button></p>`:'<p class="empty">Nothing on this day.</p>'}
+function sermonsOn(d){const k=ymd(d);return S.col.notes.filter(n=>n.date===k)}
+function sermonRow(n){const d=pd(n.date);return `<div class="rw"><a class="r" href="#notes-${esc(n.id)}" style="text-decoration:none;color:inherit"><span class="dt"><small>${DAYS[d.getDay()]}</small><b>${d.getDate()}</b></span>
+   <span style="min-width:0"><h3><i class="mk nl" aria-hidden="true"></i>${esc(n.title||"Sermon notes")}</h3><p>Sermon notes${n.series?" · "+esc(n.series):""}${n.scripture?" · "+esc(n.scripture):""}</p></span></a></div>`}
+function dayRows(d){const f=S.calF;let h=f==="bday"?"":occOn(d).filter(o=>f==="all"||catOf(o)===f).map(occRow).join("");if(f==="all"||f==="nl")h+=sermonsOn(d).map(sermonRow).join("");if(f==="all"||f==="bday")h+=bdaysOn(d).map(u=>bdayRow(u,d)).join("");return h}
 /* ---------- files and flyers ---------- */
 const FILE_COLS=["events","rhythm","announcements","posts","notes","opps"];
 const isImg=f=>/^image\//.test(f.type||"");
@@ -1696,12 +1703,12 @@ V.calendar=()=>{
     const y=S.month.getFullYear(),m=S.month.getMonth(),first=new Date(y,m,1),st=addD(first,-((first.getDay()+6)%7));
     let cells=["M","T","W","T","F","S","S"].map(d=>`<div class="h">${d}</div>`).join("");
     for(let i=0;i<42;i++){const d=addD(st,i),f=S.calF,o=f==="bday"?[]:occOn(d).filter(x=>f==="all"||catOf(x)===f),bd=(f==="all"||f==="bday")?bdaysOn(d):[],big=o.some(x=>x.big||x.src==="event");
-      const kinds=[];if(o.some(x=>!x.church))kinds.push("nl");if(o.some(x=>x.church))kinds.push("church");if(bd.length)kinds.push("bd");
+      const kinds=[];if(o.some(x=>!x.church)||((f==="all"||f==="nl")&&sermonsOn(d).length))kinds.push("nl");if(o.some(x=>x.church))kinds.push("church");if(bd.length)kinds.push("bd");
       cells+=`<button class="md ${d.getMonth()!==m?"out":""} ${ymd(d)===ymd(today())?"today":""} ${big?"big":""}" aria-selected="${ymd(d)===ymd(S.sel)}" data-act="mday" data-d="${ymd(d)}" aria-label="${d.getDate()} ${MONL[d.getMonth()]}, ${o.length+bd.length} items">${d.getDate()}${kinds.length?`<span class="mks">${kinds.map(k=>`<i class="mk ${k}"></i>`).join("")}</span>`:""}</button>`}
     const selH=dayRows(S.sel);let allH="",allN=0;for(let d=new Date(y,m,1);d.getMonth()===m;d=addD(d,1)){const h=dayRows(d);if(h){allH+=h;allN+=(h.match(/class="rw"/g)||[]).length}}
     body=`<div class="weeknav"><button data-act="mo" data-n="-1" aria-label="Previous month">‹</button><b style="font-family:var(--display);font-size:24px">${MONL[m]} ${y}</b><button data-act="mo" data-n="1" aria-label="Next month">›</button></div>
     <div class="month">${cells}</div>
-    ${S.sel.getMonth()===m?`<section class="sect"><div class="st" style="font-size:20px">${relDay(S.sel)}</div>${selH?`<div class="rows">${selH}</div>`:'<p class="empty">Nothing on this day.</p>'}</section>`:""}
+    ${S.sel.getMonth()===m?`<section class="sect"><div class="st" style="font-size:20px">${relDay(S.sel)}</div>${selH?`<div class="rows">${selH}</div>`:hiddenNote(S.sel)}</section>`:""}
     <section class="sect"><div class="st" style="font-size:20px">All of ${MONL[m]}<span class="hint">${allN} happening${allN===1?"":"s"}</span></div>${allH?`<div class="rows">${allH}</div>`:'<p class="empty">Nothing on this month.</p>'}</section>`;
   }
   const rh=S.col.rhythm.slice().sort((a,b)=>(a.freq==="first"?-1:1)-(b.freq==="first"?-1:1)||a.dow-b.dow);
