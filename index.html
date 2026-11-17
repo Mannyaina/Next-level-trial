@@ -756,7 +756,7 @@ pre.wa{white-space:pre-wrap;background:var(--surface);border-radius:14px;padding
     ["Member screens",[["Home","r:home"],["Calendar","r:calendar"],["My notes","r:mynotes"],["Writing a note","r:mynote-jdemo1"],["Notes in a sermon","r:notes-wwg-abraham"],["Events","r:events"],["News","r:news"],["More","r:more"],["Members","r:members"],["A member's profile","r:member-u_tolu"],["Give","r:give"],["Opportunities","r:opportunities"],["Series notes","r:notes"],["Prayer","r:prayer"],["About us","r:about"]]],
     ["Pop-ups members use",[["My profile","a:myprof"],["My birthday","a:bday"],["My interests","a:interests"],["Notifications","a:notifs"]]],
     ["Leader screens",[["Leader hub","l:leaders"],["People & roles","l:people"],["Birthdays","l:birthdays"],["Giving settings","l:give"],["Post something","la:post"]]],
-    ["Before you're in",[["Opening animation","x:opening"],["Join screen (members)","x:join"],["Leader sign-in","x:leadsign"]]]
+    ["Before you're in",[["Opening animation","x:opening"],["Start the trial fresh","x:reset"],["Join screen (members)","x:join"],["Leader sign-in","x:leadsign"]]]
   ];
   function lv(){try{var v=localStorage.getItem("nl.leaderView");return v==null?true:JSON.parse(v)}catch(e){return true}}
   function who(){return OUT?"out":(lv()?"leader":"member")}
@@ -786,7 +786,7 @@ pre.wa{white-space:pre-wrap;background:var(--surface);border-radius:14px;padding
     if(t==="r"){go(v);return}
     if(t==="l"){if(OUT){backIn(v);return}setView("leader");go(v);if(v==="give")setTimeout(function(){var s=document.getElementById("gv-open");if(s)s.scrollIntoView({block:"center"})},500);return}
     if(t==="a"||t==="la"){if(OUT){backIn("");return}if(t==="la")setView("leader");act(v);return}
-    if(t==="x"){if(v==="opening"){if(window.NL_REPLAY_SPLASH)window.NL_REPLAY_SPLASH();return}
+    if(t==="x"){if(v==="reset"){try{Object.keys(localStorage).filter(k=>k.indexOf("fake.")===0||k.indexOf("nl.")===0).forEach(k=>localStorage.removeItem(k));sessionStorage.setItem("nl.splash","1")}catch(e){}location.hash="";location.reload();return}if(v==="opening"){if(window.NL_REPLAY_SPLASH)window.NL_REPLAY_SPLASH();return}
       if(OUT){if(v==="leadsign")setTimeout(function(){var g=document.getElementById("g-lead");if(g)g.click()},50);else location.reload();return}
       signOut(v==="leadsign"?"lead":"join")}
   });
@@ -843,8 +843,10 @@ add('events','hop-thanks',{title:"Thanksgiving Service",date:ymdN(6),time:"10:00
 (function(){
 const SEED=window.__SEED||[];const st=k=>localStorage.getItem('fake.'+k);const sst=(k,v)=>localStorage.setItem('fake.'+k,v);
 let docs=SEED.map(r=>({...r}));
-try{const kept=JSON.parse(st('mydocs')||'null');if(Array.isArray(kept)){docs=docs.filter(r=>r.collection.indexOf('data/users/')!==0).concat(kept)}}catch(e){}
-const keepMine=()=>{try{sst('mydocs',JSON.stringify(docs.filter(r=>r.collection.indexOf('data/users/')===0)))}catch(e){}};
+// Trial: everything you post or write stays on this phone between visits (a reset button is in All screens)
+try{const kept=JSON.parse(st('alldocs')||'null');if(Array.isArray(kept)){const seen=new Set(kept.map(r=>r.collection+'/'+r.id));docs=kept.concat(docs.filter(r=>!seen.has(r.collection+'/'+r.id)&&!(JSON.parse(st('gone')||'[]')).includes(r.collection+'/'+r.id)))}
+  else{const mine=JSON.parse(st('mydocs')||'null');if(Array.isArray(mine))docs=docs.filter(r=>r.collection.indexOf('data/users/')!==0).concat(mine)}}catch(e){}
+const keepMine=()=>{try{sst('alldocs',JSON.stringify(docs))}catch(e){}};
 let people=JSON.parse(st('people')||'null')||[{id:'p1',user_id:null,email:'manny@example.com',name:'Manny',role:'owner',kind:'email',claim_code:'OWNER123',created_at:'1'}];
 (window.__DEMO_PEOPLE||[]).forEach(([u,n])=>{if(!people.some(p=>p.user_id===u))people.push({id:'p_'+u,user_id:u,email:null,name:n,role:'member',kind:'device',created_at:'1'})});
 let users=JSON.parse(st('users')||'[]');let code=st('code')||'PRAISE24';
@@ -852,7 +854,7 @@ const save=()=>{sst('people',JSON.stringify(people));sst('users',JSON.stringify(
 let session=st('session')?JSON.parse(st('session')):null;const setS=s=>{session=s;if(s)sst('session',JSON.stringify(s));else localStorage.removeItem('fake.session')};
 const me=()=>people.find(p=>session&&p.user_id===session.user.id);const role=()=>(me()||{}).role||'none';const lead=()=>['leader','owner'].includes(role());
 const norm=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-const listeners=[];function fire(col){if(String(col).indexOf('data/users/')===0)keepMine();setTimeout(()=>listeners.forEach(cb=>cb({new:{collection:col}})),30)}
+const listeners=[];function fire(col){keepMine();setTimeout(()=>listeners.forEach(cb=>cb({new:{collection:col}})),30)}
 function q(table){const S={f:[],op:'select',single:false};const api={select(){return api},eq(k,v){S.f.push([k,v]);return api},order(){return api},maybeSingle(){S.single=true;return api},upsert(v){S.op='upsert';S.val=v;return api},insert(v){S.op='insert';S.val=v;return api},update(v){S.op='update';S.val=v;return api},delete(){S.op='delete';return api},then(a,b){return Promise.resolve(run(table,S)).then(a,b)}};return api}
 const m=(r,f)=>f.every(([k,v])=>r[k]===v);
 function run(t,S){
@@ -860,7 +862,7 @@ function run(t,S){
  if(!['member','leader','owner'].includes(role()))return {data:S.single?null:[],error:null};
  if(S.op==='select'){const rows=docs.filter(r=>m(r,S.f));return {data:S.single?(rows[0]||null):rows,error:null}}
  if(S.op==='upsert'){if(['announcements','events'].includes(S.val.collection)&&!lead())return {error:{code:'42501',message:'rls'}};const i=docs.findIndex(r=>r.collection===S.val.collection&&r.id===S.val.id);if(i>=0)docs[i]={...S.val};else docs.push({...S.val});fire(S.val.collection)}
- if(S.op==='delete'){for(let i=docs.length-1;i>=0;i--)if(m(docs[i],S.f)){const c=docs[i].collection;docs.splice(i,1);fire(c)}}
+ if(S.op==='delete'){for(let i=docs.length-1;i>=0;i--)if(m(docs[i],S.f)){const c=docs[i].collection;try{const g=JSON.parse(st('gone')||'[]');g.push(c+'/'+docs[i].id);sst('gone',JSON.stringify(g))}catch(e){}docs.splice(i,1);fire(c)}}
  return {error:null}}
 const uid=()=>'u'+Math.random().toString(36).slice(2,9);
 const RPC={
@@ -2118,9 +2120,11 @@ let files=(cur.files||[]).slice(),removed=[],busy=0;
       try{
         if(col==="announcements"&&out.pinned){for(const a of S.col.announcements){if(a.pinned&&a.id!==id){const b=Object.assign({},a,{pinned:false});delete b.id;await setDoc("announcements/"+a.id,b)}}}
         const nf=r.querySelector("#ef-notify"),notify=!!(nf&&nf.checked);
-        if(id)await setDoc(col+"/"+id,body);else{const ref=await addDoc(col,body);if(notify&&ref&&ref.id&&NP())NP().notifyPost(col,ref.id).then(x=>toast(x&&x.sent?`Notification sent to ${x.sent} device${x.sent===1?"":"s"}`:"Published. No one has notifications on yet.")).catch(()=>toast("Published, but the notification didn't send"))}
+        let ref=null;if(id)await setDoc(col+"/"+id,body);else{ref=await addDoc(col,body);if(notify&&ref&&ref.id&&NP())NP().notifyPost(col,ref.id).then(x=>toast(x&&x.sent?`Notification sent to ${x.sent} device${x.sent===1?"":"s"}`:"Published. No one has notifications on yet.")).catch(()=>toast("Published, but the notification didn't send"))}
         if(removed.length&&window.NL_FILES)NL_FILES.remove(removed).catch(()=>{});
-        closeSheet();toast(id?"Saved":"Published. Everyone sees it now.")}catch(e){}
+        closeSheet();toast(id?"Saved":"Published. Everyone sees it now.");
+        if(!id){const nid=ref&&ref.id;const go={notes:nid?"notes-"+nid:"notes",events:nid?"event-"+nid:"events",announcements:"news",posts:"news",celebrations:"news",opps:"opportunities",prayerwall:"prayer",rhythm:"calendar"}[col];
+          if(go){if(location.hash==="#"+go)window.dispatchEvent(new HashChangeEvent("hashchange"));else location.hash=go}}}catch(e){}
     });
   });
 }
