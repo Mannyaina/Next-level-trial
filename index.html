@@ -288,6 +288,14 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .jot-del{color:var(--warn,#B3261E)}
 .ics-done{display:flex;gap:8px;align-items:flex-start;margin:0}.ics-done svg{width:16px;height:16px;flex:none;margin-top:3px;color:var(--good)}
 .linkbtn{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--accent);text-decoration:underline;cursor:pointer}
+.frow{padding:0;gap:0}.frow .fopen{display:flex;align-items:center;gap:12px;flex:1;min-width:0;padding:10px 12px;color:inherit;text-decoration:none}
+.frow .fshare{flex:none;margin-right:6px}
+#fview{position:fixed;inset:0;z-index:500;background:#05080D;display:flex;flex-direction:column}
+.fv-bar{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 10px max(12px,env(safe-area-inset-left,0px));color:#fff}
+.fv-n{flex:1;min-width:0;font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+.fv-b{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer}.fv-b svg{width:20px;height:20px}.fv-bar .fv-b:first-child svg{transform:rotate(45deg)}
+.fv-img{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0px);touch-action:pinch-zoom}
+.fv-img img{max-width:100%;max-height:100%;object-fit:contain}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
 .notes{display:flex;flex-direction:column;gap:14px;font-size:16px;background:var(--surface);border-radius:18px;padding:20px}
@@ -856,6 +864,13 @@ const save=()=>{sst('people',JSON.stringify(people));sst('users',JSON.stringify(
 let session=st('session')?JSON.parse(st('session')):null;const setS=s=>{session=s;if(s)sst('session',JSON.stringify(s));else localStorage.removeItem('fake.session')};
 const me=()=>people.find(p=>session&&p.user_id===session.user.id);const role=()=>(me()||{}).role||'none';const lead=()=>['leader','owner'].includes(role());
 const norm=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+/* Trial: uploaded files are kept on this phone too (in the browser's file store), so they still open after a reload */
+function fileDb(op,key,val){return new Promise(res=>{try{const rq=indexedDB.open('nl-trial-files',1);rq.onupgradeneeded=()=>rq.result.createObjectStore('f');
+  rq.onsuccess=()=>{try{const tx=rq.result.transaction('f',op==='all'?'readonly':'readwrite'),st=tx.objectStore('f');
+    if(op==='put'){st.put(val,key);tx.oncomplete=()=>res(true)}else{const out={};const c=st.openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out[cur.key]=cur.value;cur.continue()}else res(out)}}}catch(e){res(null)}};rq.onerror=()=>res(null)}catch(e){res(null)}})}
+fileDb('all').then(all=>{if(!all)return;window.__up=window.__up||{};Object.entries(all).forEach(([p,b])=>{if(!window.__up[p])window.__up[p]=URL.createObjectURL(b)});
+  const touched=new Set();docs.forEach(r=>{const fs=r.data&&r.data.files;if(!Array.isArray(fs))return;fs.forEach(x=>{if(x.path&&window.__up[x.path]){x.url=window.__up[x.path];touched.add(r.collection)}if(x.thumbPath&&window.__up[x.thumbPath]){x.thumb=window.__up[x.thumbPath]}})});
+  touched.forEach(c=>fire(c))});
 const listeners=[];function fire(col){keepMine();setTimeout(()=>listeners.forEach(cb=>cb({new:{collection:col}})),30)}
 function q(table){const S={f:[],op:'select',single:false};const api={select(){return api},eq(k,v){S.f.push([k,v]);return api},order(){return api},maybeSingle(){S.single=true;return api},upsert(v){S.op='upsert';S.val=v;return api},insert(v){S.op='insert';S.val=v;return api},update(v){S.op='update';S.val=v;return api},delete(){S.op='delete';return api},then(a,b){return Promise.resolve(run(table,S)).then(a,b)}};return api}
 const m=(r,f)=>f.every(([k,v])=>r[k]===v);
@@ -888,7 +903,7 @@ window.supabase={createClient(){return {
   signInWithPassword:async({email,password})=>{const u=users.find(x=>x.email===email&&x.password===password);if(!u)return {error:{message:'Invalid login credentials'}};setS({user:{id:u.id,email}});return {error:null}},
   signOut:async()=>{setS(null);window.__authcb&&window.__authcb('SIGNED_OUT',null);return {}}},
  from:q,rpc:async(n,a)=>RPC[n]?RPC[n](a||{}):{data:null},
- storage:{from(){return {upload:async(path,blob)=>{window.__up=(window.__up||{});window.__up[path]=URL.createObjectURL(blob);window.__upSize=(window.__upSize||[]);window.__upSize.push([path,blob.size]);return {error:null}},getPublicUrl:path=>({data:{publicUrl:window.__up[path]}}),remove:async(ps)=>{window.__removed=(window.__removed||[]).concat(ps);return {}}}}},
+ storage:{from(){return {upload:async(path,blob)=>{window.__up=(window.__up||{});window.__up[path]=URL.createObjectURL(blob);fileDb('put',path,blob);window.__upSize=(window.__upSize||[]);window.__upSize.push([path,blob.size]);return {error:null}},getPublicUrl:path=>({data:{publicUrl:window.__up[path]}}),remove:async(ps)=>{window.__removed=(window.__removed||[]).concat(ps);return {}}}}},
  functions:{invoke:async(name,{body})=>{window.__fn=(window.__fn||[]);window.__fn.push(body);
    if(body.action==='key')return {data:{key:'BGk6VaM4gRTSBkeQFBHcxxEKnl8XwhOnppqrQJ7FNY7vCmmJG6PmMAszapQpXwR1rRQ9Sl3n_WHA4uFrKJ4uX8U'}};
    if(body.action==='test')return {data:{sent:1}};
@@ -1372,6 +1387,7 @@ const P={
  more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
  opp:'<path d="M3 7h18v13H3z"/><path d="M8 7V4h8v3"/>',
  check:'<path d="m5 12 5 5 9-10"/>',
+ slides:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
  mynotes:'<path d="M5 4h9M5 9h7M5 14h4"/><path d="m13 20 .8-3.6 6-6a1.6 1.6 0 0 1 2.3 2.3l-6 6z"/>',
@@ -1555,8 +1571,12 @@ function filesHTML(files,opt){files=(files||[]).filter(f=>f&&f.url);if(!files.le
   const imgs=files.filter(isImg),docs=files.filter(f=>!isImg(f));const show=opt.compact?imgs.slice(0,1):imgs;
   const btn=f=>`data-act="file" data-u="${esc(f.url)}" data-n="${esc(f.name||"")}" data-t="${esc(f.type||"")}"`;
   return `<div class="files">${show.length?`<div class="flyers ${show.length===1?"one":""}">${show.map(f=>`<button class="flyer" ${btn(f)} aria-label="Open ${esc(f.name||"flyer")}"><img src="${esc(f.thumb||f.url)}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>`:""}
-   ${docs.map(f=>`<button class="frow" ${btn(f)}>${ic("notes")}<span><b>${esc(f.name||"File")}</b><small>${fkind(f)}${f.size?" · "+fsize(f.size):""}</small></span>${ic("share")}</button>`).join("")}
+   ${docs.map(f=>`<div class="frow"><a class="fopen" href="${esc(f.url)}" target="_blank" rel="noopener" aria-label="Open ${esc(f.name||"file")}">${ic(fkind(f)==="Slides"?"slides":"notes")}<span><b>${esc(f.name||"File")}</b><small>${fkind(f)}${f.size?" · "+fsize(f.size):""} · tap to open</small></span></a><button class="icon-b fshare" data-act="file-share" data-u="${esc(f.url)}" data-n="${esc(f.name||"")}" data-t="${esc(f.type||"")}" aria-label="Share ${esc(f.name||"file")}">${ic("share")}</button></div>`).join("")}
    ${opt.compact&&imgs.length>1?`<span class="hint">+${imgs.length-1} more image${imgs.length>2?"s":""}</span>`:""}</div>`}
+function viewImage(u,n,t){const old=$("#fview");if(old)old.remove();const v=document.createElement("div");v.id="fview";v.setAttribute("role","dialog");v.setAttribute("aria-label",n||"Image");
+  v.innerHTML=`<div class="fv-bar"><button class="fv-b" data-act="fv-close" aria-label="Close">${ic("plus",2.2)}</button><span class="fv-n">${esc(n||"")}</span><button class="fv-b" data-act="file-share" data-u="${esc(u)}" data-n="${esc(n||"")}" data-t="${esc(t||"")}" aria-label="Share">${ic("share",2)}</button></div><div class="fv-img" data-act="fv-close"><img src="${esc(u)}" alt="${esc(n||"Image")}"></div>`;
+  document.body.appendChild(v);document.documentElement.classList.add("locked")}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#fview")){$("#fview").remove();document.documentElement.classList.remove("locked")}});
 function dlUrl(u,n){return u+(u.includes("?")?"&":"?")+"download="+encodeURIComponent(n||"file")}
 function fileSheet(u,n,t){const img=/^image\//.test(t);
   openSheet(`<div class="sh-head"><h2 style="font-size:22px;overflow-wrap:anywhere">${esc(n||"File")}</h2><button class="icon-b" data-act="close" aria-label="Close">${ic("plus",2)}</button></div>
@@ -2296,7 +2316,8 @@ document.addEventListener("click",async e=>{
   if(a==="ntype"){S.mine.notify=Object.assign({},S.mine.notify||{});S.mine.notify[d.k]=b.checked;saveMine(true);return}
   if(a==="more"){const k=d.k;OPEN.has(k)?OPEN.delete(k):OPEN.add(k);const el=document.querySelector(`p[data-clamp="${CSS.escape(k)}"]`);if(el){el.classList.toggle("open",OPEN.has(k));b.textContent=OPEN.has(k)?"Show less":"Read more";b.hidden=false;if(!OPEN.has(k))el.closest("article")?.scrollIntoView({block:"nearest"})}return}
   if(a==="lead-alerts"){S.mine.leaderAlerts=S.mine.leaderAlerts===false;saveMine(true);toast(S.mine.leaderAlerts===false?"Leader alerts off":"Leader alerts on");if(S.sheetKind==="notifs")notifSheet();return}
-  if(a==="file"){fileSheet(d.u,d.n,d.t);return}
+  if(a==="file"){if(/^image\//.test(d.t||"")){viewImage(d.u,d.n,d.t)}else{window.open(d.u,"_blank","noopener")}return}
+  if(a==="fv-close"){const v=$("#fview");if(v)v.remove();document.documentElement.classList.remove("locked");return}
   if(a==="file-share"){shareFile(d.u,d.n,d.t);return}
   if(a==="push-on"){pushOn();return}
   if(a==="push-off"){NP().disable().then(refreshPush).then(()=>{toast("Notifications off for this device");if(S.sheetKind==="notifs")notifSheet()});return}
