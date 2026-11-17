@@ -258,6 +258,33 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .gv-card{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--surface);margin-bottom:12px}.gv-card .st{margin:0}
 .gv-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 10px;padding:8px 0;border-bottom:1px solid var(--line)}.gv-row small{grid-column:1;font-size:12px;color:var(--muted)}.gv-row b{grid-column:1;font-size:17px;letter-spacing:.02em;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.gv-copy{grid-column:2;grid-row:1/3;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);font:700 13px inherit;cursor:pointer}
 .gv-card .btn svg{width:16px;height:16px;margin-left:6px;vertical-align:-3px}.gv-note{margin:0;font-size:14px;color:var(--ink)}
+.jot-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.jot-lock{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted);padding-bottom:10px}.jot-lock svg,#jot-saved svg{width:14px;height:14px}
+.jot-search{display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-bottom:12px;color:var(--muted)}.jot-search svg{width:18px;height:18px;flex:none}
+.jot-search input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:500 15px inherit;outline:none;height:100%}
+.jot-st{margin:18px 0 8px}
+.jot-list{display:flex;flex-direction:column;gap:10px}
+.jot{display:flex;flex-direction:column;gap:5px;padding:14px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none}
+.jot-k{font-size:11.5px;font-weight:800;letter-spacing:.06em;display:flex;justify-content:space-between;gap:8px}
+.jot h3{margin:0;font-family:var(--display);font-size:21px;line-height:1.15;font-weight:700}
+.jot p{margin:0;font-size:14px;line-height:1.4;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.jot-ans{color:#2E9E6A;letter-spacing:0;font-weight:800}
+.jot-fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:21;height:54px;padding:0 20px;border-radius:999px;border:0;background:var(--accent,var(--ink));color:var(--accent-ink,var(--bg));font:800 15px inherit;display:flex;align-items:center;gap:8px;box-shadow:0 10px 24px -8px rgba(0,0,0,.45);cursor:pointer}.jot-fab svg{width:18px;height:18px}
+@media (min-width:960px){.jot-fab{bottom:28px}}
+.jot-empty .row{flex-wrap:wrap}
+.jot-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+#jot-saved{display:inline-flex;align-items:center;gap:6px}
+.jot-title{width:100%;box-sizing:border-box;margin:14px 0 6px;border:0;background:transparent;color:var(--ink);font:700 30px/1.15 var(--display);outline:none;padding:4px 0}
+.jot-title::placeholder{color:var(--muted);opacity:.6}
+.jot-title-ro{margin:4px 0 10px}
+.jot-sess{margin:6px 0}
+.jot-link{display:inline-flex;align-items:center;gap:8px;margin:6px 0 10px;font-weight:700;font-size:14px}.jot-link svg{width:16px;height:16px}
+.jot-body{width:100%;box-sizing:border-box;min-height:46vh;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:14px 16px;font:500 16px/1.6 inherit;resize:vertical}
+.jot-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.jot-tools .chip{padding:7px 13px;font-size:13.5px}
+.jot-all{margin-left:auto;font-weight:700;font-size:14px}
+.jot-foot{margin-top:18px}
+.jot-del{color:var(--warn,#B3261E)}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
 .notes{display:flex;flex-direction:column;gap:14px;font-size:16px;background:var(--surface);border-radius:18px;padding:20px}
@@ -725,7 +752,7 @@ pre.wa{white-space:pre-wrap;background:var(--surface);border-radius:14px;padding
   var nav=document.getElementById("trialnav"),box=nav.querySelector(".tn");
   var OUT=false;try{OUT=sessionStorage.getItem("trial.out")==="1"}catch(e){}
   var G=[
-    ["Member screens",[["Home","r:home"],["Calendar","r:calendar"],["Events","r:events"],["News","r:news"],["More","r:more"],["Members","r:members"],["A member's profile","r:member-u_tolu"],["Give","r:give"],["Opportunities","r:opportunities"],["Series notes","r:notes"],["Prayer","r:prayer"],["About us","r:about"]]],
+    ["Member screens",[["Home","r:home"],["Calendar","r:calendar"],["My notes","r:mynotes"],["Writing a note","r:mynote-jdemo1"],["Notes in a sermon","r:notes-wwg-abraham"],["Events","r:events"],["News","r:news"],["More","r:more"],["Members","r:members"],["A member's profile","r:member-u_tolu"],["Give","r:give"],["Opportunities","r:opportunities"],["Series notes","r:notes"],["Prayer","r:prayer"],["About us","r:about"]]],
     ["Pop-ups members use",[["My profile","a:myprof"],["My birthday","a:bday"],["My interests","a:interests"],["Notifications","a:notifs"]]],
     ["Leader screens",[["Leader hub","l:leaders"],["People & roles","l:people"],["Birthdays","l:birthdays"],["Giving settings","l:give"],["Post something","la:post"]]],
     ["Before you're in",[["Opening animation","x:opening"],["Join screen (members)","x:join"],["Leader sign-in","x:leadsign"]]]
@@ -802,6 +829,10 @@ add('profiles','u_tolu',{job:"Software engineer",team:"Media team",joined:"2023"
 add('profiles','u_grace',{job:"Children's nurse",team:"Welcome team",joined:"2022",ref:"Psalm 46:10",verse:"Be still, and know that I am God.",food:"Plantain",song:"Firm Foundation",hobbies:"Long walks, gospel jazz",fun:"Learning to bake sourdough",updatedAt:3});
 add('profiles','u_david',{job:"Accountant",team:"Ushering team",joined:"2022",ref:"Proverbs 3:5",verse:"Trust in the Lord with all your heart.",food:"Suya",hobbies:"Bass guitar, board games",fun:"Arsenal season ticket holder",updatedAt:2});
 add('profiles','u_sam',{job:"Civil engineer",team:"Media team",joined:"2024",ref:"Isaiah 40:31",food:"Fried rice",updatedAt:1});
+add('data/users/u-manny','me',{remind:{},teams:[],onboarded:true,notes:{"wwg-abraham":"God spoke before Abraham saw the destination.\nTakeaway: obedience first, clarity later.\nScripture: Genesis 12:1"},book:{
+ jdemo1:{id:'jdemo1',kind:'thought',title:'Saying yes to serving',body:'Thinking about joining the media team in January. Need to pray about how much time I can give.',sess:'',date:ymdN(-1),at:1,upd:1,answered:false},
+ jdemo2:{id:'jdemo2',kind:'prayer',title:'Job interview on Friday',body:'Lord, give me peace and clear words. Your will be done.',sess:'',date:ymdN(-9),at:2,upd:2,answered:true},
+ jdemo3:{id:'jdemo3',kind:'sermon',title:'Sunday: faith that moves',body:'Pastor Sam: faith is acting before you see the whole picture.\nTakeaway: stop waiting to feel ready.',sess:'',date:ymdN(-2),at:3,upd:3,answered:false}}});
 add('rhythm','hop-sunday',{title:"Sunday Service · House of Praise",freq:"weekly",dow:0,time:"10:00",end:"12:00",where:"House of Praise",church:true,createdAt:1});
 add('events','hop-thanks',{title:"Thanksgiving Service",date:ymdN(6),time:"10:00",end:"13:00",where:"House of Praise main auditorium",church:true,desc:"Whole-church thanksgiving service.",createdAt:1});
 })();
@@ -811,6 +842,8 @@ add('events','hop-thanks',{title:"Thanksgiving Service",date:ymdN(6),time:"10:00
 (function(){
 const SEED=window.__SEED||[];const st=k=>localStorage.getItem('fake.'+k);const sst=(k,v)=>localStorage.setItem('fake.'+k,v);
 let docs=SEED.map(r=>({...r}));
+try{const kept=JSON.parse(st('mydocs')||'null');if(Array.isArray(kept)){docs=docs.filter(r=>r.collection.indexOf('data/users/')!==0).concat(kept)}}catch(e){}
+const keepMine=()=>{try{sst('mydocs',JSON.stringify(docs.filter(r=>r.collection.indexOf('data/users/')===0)))}catch(e){}};
 let people=JSON.parse(st('people')||'null')||[{id:'p1',user_id:null,email:'manny@example.com',name:'Manny',role:'owner',kind:'email',claim_code:'OWNER123',created_at:'1'}];
 (window.__DEMO_PEOPLE||[]).forEach(([u,n])=>{if(!people.some(p=>p.user_id===u))people.push({id:'p_'+u,user_id:u,email:null,name:n,role:'member',kind:'device',created_at:'1'})});
 let users=JSON.parse(st('users')||'[]');let code=st('code')||'PRAISE24';
@@ -818,7 +851,7 @@ const save=()=>{sst('people',JSON.stringify(people));sst('users',JSON.stringify(
 let session=st('session')?JSON.parse(st('session')):null;const setS=s=>{session=s;if(s)sst('session',JSON.stringify(s));else localStorage.removeItem('fake.session')};
 const me=()=>people.find(p=>session&&p.user_id===session.user.id);const role=()=>(me()||{}).role||'none';const lead=()=>['leader','owner'].includes(role());
 const norm=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-const listeners=[];function fire(col){setTimeout(()=>listeners.forEach(cb=>cb({new:{collection:col}})),30)}
+const listeners=[];function fire(col){if(String(col).indexOf('data/users/')===0)keepMine();setTimeout(()=>listeners.forEach(cb=>cb({new:{collection:col}})),30)}
 function q(table){const S={f:[],op:'select',single:false};const api={select(){return api},eq(k,v){S.f.push([k,v]);return api},order(){return api},maybeSingle(){S.single=true;return api},upsert(v){S.op='upsert';S.val=v;return api},insert(v){S.op='insert';S.val=v;return api},update(v){S.op='update';S.val=v;return api},delete(){S.op='delete';return api},then(a,b){return Promise.resolve(run(table,S)).then(a,b)}};return api}
 const m=(r,f)=>f.every(([k,v])=>r[k]===v);
 function run(t,S){
@@ -1333,6 +1366,9 @@ const P={
  news:'<path d="M4 4h13v16H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v10a2 2 0 0 1-2 2"/><path d="M8 8h5M8 12h5M8 16h3"/>',
  more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
  opp:'<path d="M3 7h18v13H3z"/><path d="M8 7V4h8v3"/>',
+ lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+ mynotes:'<path d="M5 4h9M5 9h7M5 14h4"/><path d="m13 20 .8-3.6 6-6a1.6 1.6 0 0 1 2.3 2.3l-6 6z"/>',
  notes:'<path d="M5 3h10l4 4v14H5z"/><path d="M9 11h6M9 15h6M9 7h3"/>',
  prayer:'<path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.5-7 11-7 11z"/>',
  "whats-on":'<rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
@@ -1360,7 +1396,7 @@ const ic=(n,w)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const COLS=["announcements","events","rhythm","posts","celebrations","opps","notes","prayerwall","notifications","settings"];
 const SELF=["rsvps","reacts","bdays","interest","shoutouts","prayer","comments","profiles"];
 const S={db:null,user:null,room:null,dl:null,uid:null,admin:false,canWrite:null,leaderView:ls.get("leaderView",true),
-  col:{},self:{},mine:{remind:{},notes:{},teams:[],onboarded:false},mineLoaded:false,ready:false,offline:false,timedOut:false,loaded:new Set(),peers:[],me:null,
+  col:{},self:{},mine:{remind:{},notes:{},book:{},teams:[],onboarded:false},jotF:"all",mineLoaded:false,ready:false,offline:false,timedOut:false,loaded:new Set(),peers:[],me:null,
   route:"home",calF:"all",bdMode:"soon",memberId:null,newsKind:"All",oppCat:"All",celeAll:false,calMode:"week",weekStart:null,sel:today(),month:null,openNote:null,peek:{},readOnlyHit:false,detail:null,onboardShown:false};
 COLS.forEach(c=>S.col[c]=[]);SELF.forEach(c=>S.self[c]={});
 S.weekStart=addD(today(),-((today().getDay()+6)%7)); // weeks start Monday
@@ -1369,11 +1405,11 @@ const isLeader=()=>S.admin&&S.leaderView;
 const memberCanWrite=()=>S.canWrite!==false&&!S.readOnlyHit;
 
 /* ---------- routing ---------- */
-const TABS=[["home","Home"],["calendar","Calendar"],["events","Events"],["news","News"],["more","More"]];
-const ALLR=["home","calendar","events","news","more","opportunities","notes","prayer","about","leaders","people","members","member","birthdays","give"];
+const TABS=[["home","Home"],["calendar","Calendar"],["mynotes","Notes"],["events","Events"],["more","More"]];
+const ALLR=["home","calendar","events","news","more","opportunities","notes","prayer","about","leaders","people","members","member","birthdays","give","mynotes","mynote"];
 const LEGACY={"whats-on":"calendar",community:"news",grow:"notes"};
 function readRoute(){let h=decodeURIComponent((location.hash||"").slice(1));if(LEGACY[h])h=LEGACY[h];
-  if(h.startsWith("event-")){S.deepEvent=h.slice(6);h="events"}else if(h.startsWith("notes-")){S.openNote=h.slice(6);h="notes"}else if(h.startsWith("member-")){S.memberId=h.slice(7);h="member"}
+  if(h.startsWith("event-")){S.deepEvent=h.slice(6);h="events"}else if(h.startsWith("notes-")){S.openNote=h.slice(6);h="notes"}else if(h.startsWith("member-")){S.memberId=h.slice(7);h="member"}else if(h.startsWith("mynote-")){S.jotId=h.slice(7);h="mynote"}
   S.route=ALLR.includes(h)?h:"home";if((S.route==="leaders"||S.route==="people"||S.route==="birthdays")&&S.ready&&!S.admin)S.route="home"}
 window.addEventListener("hashchange",()=>{if($("#sheet-root").innerHTML)closeSheet();S.openNote=null;readRoute();render(true);toTop()});
 
@@ -1696,7 +1732,7 @@ V.news=()=>{
      ${p.title?`<h3 style="font-size:22px">${esc(p.title)}</h3>`:""}${clampText(p.text,"p:"+p.id)}${filesHTML(p.files)}${reactBar(p.id)}${isLeader()?`<div class="row">${editLink("posts",p.id)}</div>`:""}</article>`).join(""):'<p class="empty">Nothing here yet.</p>'}</section>`;
 };
 V.more=()=>`<div class="ph"><h1>More</h1></div>
-  <div class="tiles">${[["give","gift","Give","Tithes and offerings"],["members","users","Members","Profiles and birthdays"],["opportunities","opp","Opportunities","Serve, grow, careers, outreach"],["notes","notes","Series Notes","Fill-in notes for each message"],["prayer","prayer","Prayer","Requests and the prayer wall"],["about","info","About us","Mission, vision, values"]].map(([k,i,t,s])=>`<a class="tile" href="#${k}">${ic(i)}<b>${t}</b><small>${s}</small></a>`).join("")}</div>
+  <div class="tiles">${[["news","news","News","Announcements and updates"],["give","gift","Give","Tithes and offerings"],["members","users","Members","Profiles and birthdays"],["opportunities","opp","Opportunities","Serve, grow, careers, outreach"],["notes","notes","Series Notes","Fill-in notes for each message"],["prayer","prayer","Prayer","Requests and the prayer wall"],["about","info","About us","Mission, vision, values"]].map(([k,i,t,s])=>`<a class="tile" href="#${k}">${ic(i)}<b>${t}</b><small>${s}</small></a>`).join("")}</div>
   <div class="menu">
    ${S.uid?`<button data-act="myprof">${ic("users")}<span>My profile<small>What you do, scripture, get to know me</small></span></button>`:""}
    ${S.uid?`<button data-act="interests">${ic("star")}<span>My interests<small>Shows your teams first in Opportunities</small></span></button>
@@ -1791,6 +1827,60 @@ V.give=()=>{const c=gcfg(),ready=c.open&&(c.acct||c.link),lead=S.admin;
     <div class="row"><button class="btn small" data-act="givesave">Save giving settings</button></div>
    </div></section>`:""}`;
 };
+
+/* ---------- My notes: private notebook (only the writer can read it) ---------- */
+const JOT_KINDS=[["sermon","Sermon"],["thought","Thought"],["prayer","Prayer"]];
+const JOT_INS=[["take","+ Takeaway"],["scr","+ Scripture"],["pray","+ Prayer"],["dot","• List"]];
+const JOT_TXT={take:"Takeaway: ",scr:"Scripture: ",pray:"Prayer: ",dot:"• "};
+function jotAll(){
+  const out=Object.values(S.mine.book||{}).filter(Boolean).map(e=>Object.assign({},e));
+  Object.entries(S.mine.notes||{}).forEach(([nid,txt])=>{if(!txt||!String(txt).trim())return;const n=S.col.notes.find(x=>x.id===nid);
+    out.push({id:"s-"+nid,kind:"sermon",title:n?n.title:"Session notes",body:String(txt),sess:nid,date:n&&n.date||"",upd:0,virtual:true,series:n&&n.series||""})});
+  return out.sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.upd||0)-(a.upd||0));
+}
+function jotGet(id){if(id&&id.startsWith("s-")){const nid=id.slice(2);const n=S.col.notes.find(x=>x.id===nid);return {id,kind:"sermon",title:n?n.title:"Session notes",body:(S.mine.notes||{})[nid]||"",sess:nid,date:n&&n.date||"",virtual:true,series:n&&n.series||""}}return (S.mine.book||{})[id]||null}
+function jotLabel(e){const k=(JOT_KINDS.find(x=>x[0]===e.kind)||["","Note"])[1];if(!e.date)return k;const d=pd(e.date);return `${k} · ${DAYS[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`}
+function todayIso(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function jotNew(kind,sess){const id="j"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);const n=sess?S.col.notes.find(x=>x.id===sess):null;
+  S.mine.book=S.mine.book||{};S.mine.book[id]={id,kind:kind||"thought",title:n?n.title:"",body:"",sess:sess||"",date:n&&n.date||todayIso(),at:Date.now(),upd:Date.now(),answered:false};saveMine(true);return id}
+function jotCard(e){const k=e.kind;const col=k==="sermon"?"var(--c-nl)":k==="prayer"?"var(--c-bd)":"var(--muted)";
+  const prev=(e.body||"").replace(/\s+/g," ").trim().slice(0,140);
+  return `<a class="jot" href="#mynote-${esc(e.id)}" data-text="${esc(((e.title||"")+" "+(e.body||"")+" "+(e.series||"")).toLowerCase())}" data-kind="${esc(k)}">
+   <span class="jot-k" style="color:${col}">${esc(jotLabel(e).toUpperCase())}${k==="prayer"&&e.answered?`<b class="jot-ans">Answered</b>`:""}</span>
+   <h3>${esc(e.title||(prev?prev.slice(0,48):"Untitled"))}</h3>${prev&&e.title?`<p>${esc(prev)}</p>`:""}</a>`}
+V.mynotes=()=>{
+  if(!S.uid)return `<div class="ph"><h1>My notes</h1></div><p class="empty">Sign in to keep private notes.</p>`;
+  const all=jotAll(),f=S.jotF||"all",list=f==="all"?all:all.filter(e=>e.kind===f);
+  const wk=new Date();wk.setDate(wk.getDate()-7);const wkI=wk.getFullYear()+"-"+String(wk.getMonth()+1).padStart(2,"0")+"-"+String(wk.getDate()).padStart(2,"0");
+  const recent=list.filter(e=>(e.date||"")>=wkI),older=list.filter(e=>(e.date||"")<wkI);
+  const cnt=k=>k==="all"?all.length:all.filter(e=>e.kind===k).length;
+  const cur=currentNote();
+  return `<div class="ph jot-h"><h1>My notes</h1><span class="jot-lock">${ic("lock",2)}Only you</span></div>
+  ${all.length?`<label class="jot-search">${ic("search",2)}<input id="jot-q" type="search" placeholder="Search your notes" aria-label="Search your notes" autocomplete="off"></label>
+  <div class="chips scroll" role="group" aria-label="Show">${[["all","All"],["sermon","Sermons"],["thought","Thoughts"],["prayer","Prayers"]].map(([k,l])=>`<button class="chip" data-act="jotf" data-k="${k}" aria-pressed="${f===k}">${l}${k==="all"?" · "+cnt(k):""}</button>`).join("")}</div>
+  ${recent.length?`<div class="st jot-st">This week</div><div class="jot-list">${recent.map(jotCard).join("")}</div>`:""}
+  ${older.length?`<div class="st jot-st">Earlier</div><div class="jot-list">${older.map(jotCard).join("")}</div>`:""}
+  ${!list.length?`<p class="empty">Nothing here yet.</p>`:""}<p class="empty" id="jot-none" hidden>No notes match that.</p>`
+  :`<section class="opp jot-empty"><div class="st">Your private notebook</div><p>Sermon notes, thoughts and prayers. Only you can read what you write here. Leaders can't see it.</p>
+   <div class="row">${cur?`<button class="btn" data-act="jotnew" data-k="sermon" data-s="${esc(cur.id)}">Notes for ${esc(cur.title)}</button>`:""}<button class="btn ghost" data-act="jotnew" data-k="thought">Write a thought</button><button class="btn ghost" data-act="jotnew" data-k="prayer">Write a prayer</button></div></section>`}
+  <button class="jot-fab" data-act="jotnew" data-k="${f==="all"?"":f}">${ic("plus",2.6)}New note</button>`;
+};
+V.mynote=()=>{
+  const e=jotGet(S.jotId);
+  if(!e)return `<a class="backlink" href="#mynotes">${ic("chev",2)}My notes</a><p class="empty">This note isn't here any more.</p>`;
+  const sessN=e.sess?S.col.notes.find(x=>x.id===e.sess):null;
+  const sessions=S.col.notes.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,30);
+  return `<div class="jot-top"><a class="backlink" href="#mynotes">${ic("chev",2)}My notes</a><span class="hint" id="jot-saved">${ic("lock",2)} Only you</span></div>
+  ${e.virtual?`<span class="jot-k" style="color:var(--c-nl)">${esc(jotLabel(e).toUpperCase())}</span><h1 class="jot-title-ro">${esc(e.title)}</h1>`
+   :`<div class="chips" role="group" aria-label="Type of note">${JOT_KINDS.map(([k,l])=>`<button class="chip" data-act="jotkind" data-k="${k}" aria-pressed="${e.kind===k}">${l}</button>`).join("")}</div>
+     <input id="jot-title" class="jot-title" value="${esc(e.title||"")}" placeholder="Title" aria-label="Title" maxlength="120" autocomplete="off">`}
+  ${e.kind==="sermon"&&!e.virtual?`<label class="f jot-sess" for="jot-sess">Message<select id="jot-sess"><option value="">Not linked</option>${sessions.map(n=>`<option value="${esc(n.id)}" ${n.id===e.sess?"selected":""}>${esc(n.title)}${n.date?" · "+pd(n.date).getDate()+" "+MON[pd(n.date).getMonth()]:""}</option>`).join("")}</select></label>`:""}
+  ${sessN?`<a class="jot-link" href="#notes-${esc(sessN.id)}">${ic("notes",2)}Open the fill-in notes for ${esc(sessN.title)}</a>`:""}
+  <textarea id="jot-body" class="jot-body" placeholder="${e.kind==="prayer"?"Talk to God…":e.kind==="sermon"?"What stood out to you?":"Write anything…"}" aria-label="Note">${esc(e.body||"")}</textarea>
+  <div class="jot-tools">${JOT_INS.map(([k,l])=>`<button class="chip" data-act="jotins" data-k="${k}">${l}</button>`).join("")}</div>
+  ${e.kind==="prayer"&&!e.virtual?`<div class="row"><button class="btn ghost small" data-act="jotans" aria-pressed="${!!e.answered}">${e.answered?"✓ Answered":"Mark as answered"}</button><button class="btn ghost small" data-act="jotshare">Send to the prayer team</button></div>`:""}
+  <div class="row jot-foot"><button class="btn ghost small jot-del" data-act="jotdel">${e.virtual?"Clear these notes":"Delete note"}</button></div>`;
+};
 V.opportunities=()=>{
   const mineI=S.uid?(mySelf("interest").opps||{}):{};const teams=S.mine.teams||[];
   const list=S.col.opps.slice().sort((a,b)=>(teams.includes(b.id)?1:0)-(teams.includes(a.id)?1:0)||(a.title||"").localeCompare(b.title||""));
@@ -1818,7 +1908,7 @@ V.notes=()=>{
   ${bc?`<div class="progress" aria-label="${rev} of ${bc} points revealed"><span style="width:${Math.round(rev/bc*100)}%"></span></div>`:""}
   <section class="notes">${open.scripture?`<div class="scripture">${esc(open.scripture)}</div>`:""}${renderNoteBody(open)}</section>
   ${(open.files||[]).length?`<section class="sect"><div class="st" style="font-size:20px">Handouts and slides</div>${filesHTML(open.files)}</section>`:""}
-  ${S.uid?`<label class="f" for="mynote">My notes · only you see these<textarea id="mynote" data-note="${esc(open.id)}" placeholder="What stood out to you?">${esc(myNote)}</textarea></label>`:""}
+  ${S.uid?`<label class="f" for="mynote">My notes · only you see these<textarea id="mynote" data-note="${esc(open.id)}" placeholder="What stood out to you?">${esc(myNote)}</textarea></label><div class="jot-tools">${JOT_INS.map(([k,l])=>`<button class="chip" data-act="jotins" data-k="${k}">${l}</button>`).join("")}<a class="jot-all" href="#mynotes">All my notes</a></div>`:""}
   <section class="sect"><div class="st">All sessions</div>${Object.entries(groups).map(([g,ns])=>`<span class="hint" style="font-weight:700">${esc(g)}</span><div class="rows">${ns.map(n=>`<button class="r" data-act="opennote" data-id="${esc(n.id)}"><span class="dt"><small>${n.date?MON[pd(n.date).getMonth()]:"—"}</small><b>${n.date?pd(n.date).getDate():"·"}</b></span><span><h3>${esc(n.title)}</h3><p>${esc(n.scripture||"")}</p></span>${n.id===open.id?'<span class="pill going">Open</span>':`<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${P.chev}</svg>`}</button>`).join("")}</div>`).join("")}</section>`;
 };
 V.prayer=()=>{
@@ -1904,12 +1994,12 @@ V.people=()=>{
 
 /* ---------- nav, side, online ---------- */
 function renderNav(){
-  const cur=S.route;const moreSet=["more","opportunities","notes","prayer","about","leaders"];
-  const railR=[["home","Home"],["calendar","Calendar"],["events","Events"],["news","News"],["opportunities","Opportunities"],["notes","Series Notes"],["prayer","Prayer"],["about","About us"]].concat(S.admin?[["leaders","Leader hub"]]:[]);
+  const cur=S.route;const moreSet=["more","news","opportunities","notes","prayer","about","leaders","members","member","give","people","birthdays"];
+  const railR=[["home","Home"],["calendar","Calendar"],["mynotes","My notes"],["events","Events"],["news","News"],["opportunities","Opportunities"],["notes","Series Notes"],["prayer","Prayer"],["about","About us"]].concat(S.admin?[["leaders","Leader hub"]]:[]);
   const icon={opportunities:"opp",about:"info",leaders:"shield"};
   setHTML($("#rail"),`<a href="#home" class="rail-brand"><span class="mark">NL</span><b>Next Level</b></a>`+railR.map(([k,l])=>`<a href="#${k}" aria-current="${cur===k?"page":"false"}">${ic(icon[k]||k)}${l}</a>`).join(""));
   const lead=isLeader()&&S.ready,n=inboxCount();
-  const tabs=TABS.map(([k,l])=>{const on=k===cur||(k==="more"&&moreSet.includes(cur));return `<a href="#${k}" aria-current="${on?"page":"false"}">${ic(k)}${l}</a>`});
+  const tabs=TABS.map(([k,l])=>{const on=k===cur||(k==="more"&&moreSet.includes(cur))||(k==="mynotes"&&cur==="mynote");return `<a href="#${k}" aria-current="${on?"page":"false"}">${ic(k)}${l}</a>`});
   if(lead)tabs.splice(2,0,`<button class="tab-post" data-act="post" aria-label="Post something${n?`, ${n} waiting`:""}"><span class="tp">${ic("plus",2.4)}${n?`<span class="n">${n}</span>`:""}</span>Post</button>`);
   const tb=$("#tabs");tb.classList.toggle("lead",lead);setHTML(tb,tabs.join(""));
   const f=$("#fab");f.hidden=!lead;setHTML(f,ic("plus",2.2)+(n?`<span class="n">${n}</span>`:""));
@@ -2148,6 +2238,15 @@ document.addEventListener("click",async e=>{
     if(sort&&sort.length!==6){toast("Sort code should be 6 digits");return}if(acct&&acct.length!==8){toast("Account number should be 8 digits");return}
     const body={open:document.getElementById("gv-open").checked,name:g("gv-name").slice(0,80),sort:sort?sort.replace(/(\d\d)(\d\d)(\d\d)/,"$1-$2-$3"):"",acct,ref:g("gv-ref").slice(0,18),link:link.slice(0,300),note:g("gv-note").slice(0,400),updatedAt:Date.now()};
     const i=S.col.settings.findIndex(x=>x.id==="giving");const row=Object.assign({id:"giving"},body);if(i>=0)S.col.settings[i]=row;else S.col.settings.push(row);setDoc("settings/giving",body).then(()=>toast(body.open?"Saved. Members can see giving details":"Saved. Hidden from members for now"));render();return}
+  if(a==="jotf"){S.jotF=d.k;render(true);return}
+  if(a==="jotnew"){if(!S.uid)return;const id=jotNew(d.k||(S.jotF!=="all"?S.jotF:"thought"),d.s||"");location.hash="mynote-"+id;setTimeout(()=>{const t=$("#jot-title")&&!d.s?$("#jot-title"):$("#jot-body");if(t)t.focus()},120);return}
+  if(a==="jotkind"){const e=(S.mine.book||{})[S.jotId];if(!e)return;e.kind=d.k;e.upd=Date.now();saveMine();render(true);return}
+  if(a==="jotans"){const e=(S.mine.book||{})[S.jotId];if(!e)return;e.answered=!e.answered;e.upd=Date.now();saveMine();render(true);return}
+  if(a==="jotins"){const ta=$("#jot-body")||$("#mynote");if(!ta)return;const ins=JOT_TXT[d.k]||"";const p=ta.selectionStart!=null&&document.activeElement===ta?ta.selectionStart:ta.value.length;
+    const before=ta.value.slice(0,p),pre=before&&!before.endsWith("\n")?"\n":"";ta.value=before+pre+ins+ta.value.slice(p);const c=p+pre.length+ins.length;ta.focus();try{ta.setSelectionRange(c,c)}catch(err){}ta.dispatchEvent(new Event("input",{bubbles:true}));return}
+  if(a==="jotdel"){if(b.dataset.sure!=="1"){b.dataset.sure="1";const was=b.textContent;b.textContent="Tap again to delete";setTimeout(()=>{if(b.isConnected){b.dataset.sure="";b.textContent=was}},3000);return}
+    const e=jotGet(S.jotId);if(!e)return;if(e.virtual){delete S.mine.notes[e.sess]}else{delete S.mine.book[e.id]}saveMine(true);toast("Deleted");location.hash="mynotes";return}
+  if(a==="jotshare"){const e=jotGet(S.jotId);if(!e)return;const txt=(e.body||e.title||"").trim();location.hash="prayer";setTimeout(()=>{const p=$("#pr-text");if(p){p.value=txt.slice(0,1000);p.focus();toast("Check it, then tap Send")}},250);return}
   if(a==="bdsave"){const g=id=>document.getElementById(id);const body=Object.assign(bcfg(),{auto:g("bc-auto").checked,time:g("bc-time").value||"08:00",remind:g("bc-remind").checked,rtime:g("bc-rtime").value||"19:00",push:g("bc-push").checked,tpl:(g("bc-tpl").value.trim()||BCFG_DEF.tpl).slice(0,1000),updatedAt:Date.now()});
     const i=S.col.settings.findIndex(x=>x.id==="birthdays");const row=Object.assign({id:"birthdays"},body);if(i>=0)S.col.settings[i]=row;else S.col.settings.push(row);setDoc("settings/birthdays",body).then(()=>toast(body.auto?"Saved. Birthdays will post at "+ft(body.time):"Saved"));render();return}
   if(a==="nk"){S.newsKind=d.k;render();return}
@@ -2199,13 +2298,20 @@ document.addEventListener("click",async e=>{
 });
 $("#fab").addEventListener("click",leaderSheet);
 const setOffline=()=>{$("#offline").hidden=navigator.onLine!==false};window.addEventListener("online",()=>{setOffline();toast("Back online")});window.addEventListener("offline",setOffline);setOffline();
-document.addEventListener("change",async e=>{const el=e.target;if(el.dataset&&el.dataset.actChange==="role"){try{await window.NL_ADMIN.setRole(el.dataset.id,el.value);toast("Role updated")}catch(err){toast("You can't change that person's role.")}loadPeople()}});
+document.addEventListener("change",async e=>{if(e.target.id==="jot-sess"){const b=(S.mine.book||{})[S.jotId];if(b){b.sess=e.target.value;const n=S.col.notes.find(x=>x.id===b.sess);if(n){if(!b.title)b.title=n.title;if(n.date)b.date=n.date}b.upd=Date.now();saveMine();render(true)}return}
+const el=e.target;if(el.dataset&&el.dataset.actChange==="role"){try{await window.NL_ADMIN.setRole(el.dataset.id,el.value);toast("Role updated")}catch(err){toast("You can't change that person's role.")}loadPeople()}});
 document.addEventListener("submit",async e=>{if(e.target.id!=="pp-add")return;e.preventDefault();const em=$("#pp-email").value.trim(),nm=$("#pp-name").value.trim(),rl=$("#pp-role").value;
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){toast("Enter a valid email address");return}
   try{const code=await window.NL_ADMIN.invite(em,nm,rl);$("#pp-email").value="";$("#pp-name").value="";$("#pp-email").blur();$("#pp-name").blur();loadPeople();
     showCodeSheet("Setup code for "+(nm||em),"Send this to them. It works once, and it's their only way to create their login.",code,setupMessage(nm,code))}
   catch(err){toast(err&&err.code==="exists"?"That email already has an account.":"Couldn't add them. Try again.")}});
-document.addEventListener("input",e=>{if(e.target.id==="mynote"){S.mine.notes=S.mine.notes||{};S.mine.notes[e.target.dataset.note]=e.target.value.slice(0,20000);saveMine()}});
+document.addEventListener("input",e=>{const id=e.target.id;
+  if(id==="jot-q"){const q=e.target.value.trim().toLowerCase();let shown=0;document.querySelectorAll("#view .jot").forEach(c=>{const ok=!q||c.dataset.text.includes(q);c.hidden=!ok;if(ok)shown++});
+    document.querySelectorAll("#view .jot-st").forEach(h=>{const l=h.nextElementSibling;h.hidden=!!l&&![...l.children].some(c=>!c.hidden)});const n=$("#jot-none");if(n)n.hidden=shown>0;return}
+  if(id==="jot-body"||id==="jot-title"){const e2=jotGet(S.jotId);if(!e2)return;
+    if(e2.virtual){S.mine.notes[e2.sess]=e.target.value.slice(0,20000)}else{const b=S.mine.book[e2.id];if(id==="jot-body")b.body=e.target.value.slice(0,20000);else b.title=e.target.value.slice(0,120);b.upd=Date.now()}
+    saveMine();const sv=$("#jot-saved");if(sv){sv.textContent="Saving…";clearTimeout(window.__jotT);window.__jotT=setTimeout(()=>{if(sv.isConnected)sv.innerHTML=ic("lock",2)+" Saved · only you"},900)}return}
+  if(e.target.id==="mynote"){S.mine.notes=S.mine.notes||{};S.mine.notes[e.target.dataset.note]=e.target.value.slice(0,20000);saveMine()}});
 
 /* ---------- boot ---------- */
 readRoute();render();
@@ -2227,7 +2333,7 @@ readRoute();render();
     first.add(c);render()},()=>{clearTimeout(timer);render()})}catch(e){}});
   SELF.forEach(c=>{try{db.collection(c).onSnapshot(s=>{const m={};s.docs.forEach(x=>m[x.id]=x.data());
     if(S.uid&&s.metadata.hasPendingWrites&&S.self[c][S.uid]&&!m[S.uid])m[S.uid]=S.self[c][S.uid];S.self[c]=m;render()},()=>{})}catch(e){}});
-  if(S.uid){try{db.doc("data/users/"+S.uid+"/me").onSnapshot(s=>{if(!mineT){const d=s.exists?(s.data()||{}):{};S.mine={remind:Object.assign({},d.remind||{}),notes:Object.assign({},d.notes||{}),teams:(d.teams||[]).slice(),onboarded:!!d.onboarded,seenAt:Number(d.seenAt||0),leaderAlerts:d.leaderAlerts!==false,notify:Object.assign({},d.notify||{})}}
+  if(S.uid){try{db.doc("data/users/"+S.uid+"/me").onSnapshot(s=>{if(!mineT){const d=s.exists?(s.data()||{}):{};S.mine={remind:Object.assign({},d.remind||{}),notes:Object.assign({},d.notes||{}),book:Object.assign({},d.book||{}),teams:(d.teams||[]).slice(),onboarded:!!d.onboarded,seenAt:Number(d.seenAt||0),leaderAlerts:d.leaderAlerts!==false,notify:Object.assign({},d.notify||{})}}
       if(!s.metadata.fromCache)S.mineLoaded=true;render()},()=>{S.mineLoaded=true})}catch(e){}}
   if(room){try{room.onPeers(ch=>{S.peers=ch.peers||[];renderOnline()});room.presence({here:true}).catch(()=>{})}catch(e){S.room=null}}
 })();
