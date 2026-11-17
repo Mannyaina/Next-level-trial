@@ -1428,11 +1428,13 @@ function occOn(d){
     out.push({src:"rhythm",id:r.id,rk:"r:"+r.id,date:k,title:r.title,time:r.time,end:r.end,where:r.where,desc:r.desc,big:r.freq==="first",church:!!r.church});
   }
   for(const e of S.col.events)if(e.date===k)out.push({src:"event",id:e.id,rk:"e:"+e.id,date:k,title:e.title,time:e.time,end:e.end,where:e.where,desc:e.desc,tbc:e.tbc,type:e.type,church:!!e.church});
+  for(const n of S.col.notes)if(n.date===k)out.push({src:"note",id:n.id,rk:"n:"+n.id,date:k,title:n.title||"Sermon notes",sub:"Sermon notes"+(n.series?" · "+n.series:"")+(n.scripture?" · "+n.scripture:""),href:"#notes-"+n.id});
+  for(const c of S.col.celebrations)if(c.date===k)out.push({src:"cele",id:c.id,rk:"c:"+c.id,date:k,title:(c.name||"Someone")+(c.kind?" · "+c.kind:""),sub:"Celebration · tap to celebrate with them",href:"#news",cele:true});
   return out.sort((a,b)=>(a.time||"99").localeCompare(b.time||"99"));
 }
 function upcoming(days,from){const s=from||today(),out=[];for(let i=0;i<days;i++)occOn(addD(s,i)).forEach(o=>out.push(o));return out}
 function notPast(o){if(o.date!==ymd(today())||!o.time)return true;const n=new Date();return (o.end||o.time)>=pad(n.getHours())+":"+pad(n.getMinutes())}
-function nextUp(){const l=upcoming(70).filter(notPast);return l.find(o=>o.big||o.src==="event")||l[0]||null}
+function nextUp(){const l=upcoming(70).filter(notPast).filter(o=>o.src==="event"||o.src==="rhythm");return l.find(o=>o.big||o.src==="event")||l[0]||null}
 function findOcc(rk,date){return occOn(pd(date)).find(o=>o.rk===rk)}
 
 /* ---------- posting rules ---------- */
@@ -1531,10 +1533,11 @@ async function exportICS(which){
 
 /* ---------- small renderers ---------- */
 function remBtn(o){const on=!!S.mine.remind[o.rk];return `<button class="icon-b" data-act="remind" data-k="${esc(o.rk)}" aria-pressed="${on}" aria-label="${on?"Turn off reminder for":"Remind me about"} ${esc(o.title)}">${ic("bell")}</button>`}
-function occRow(o){const d=pd(o.date);const g=o.src==="event"&&going(o.id);
+function occRow(o){const d=pd(o.date);if(o.href)return `<div class="rw"><a class="r" href="${o.href}" style="text-decoration:none;color:inherit"><span class="dt"><small>${DAYS[d.getDay()]}</small><b>${d.getDate()}</b></span>
+   <span style="min-width:0"><h3><i class="mk ${catOf(o)}" aria-hidden="true"></i>${esc(o.title)}</h3><p>${esc(o.sub||"")}</p></span></a></div>`;const g=o.src==="event"&&going(o.id);
   return `<div class="rw"><button class="r" data-act="detail" data-k="${esc(o.rk)}" data-d="${o.date}"><span class="dt ${o.big?"big":""}"><small>${DAYS[d.getDay()]}</small><b>${d.getDate()}</b></span>
    <span style="min-width:0"><h3><i class="mk ${catOf(o)}" aria-hidden="true"></i>${esc(o.title)}</h3><p>${o.church?'<span class="tagline church">Main church</span> · ':""}${o.tbc?"Date TBC · ":""}${esc(tr(o.time,o.end))}${o.where?" · "+esc(o.where):""}</p></span>${g?'<span class="pill going">Going</span>':""}</button>${remBtn(o)}</div>`}
-const catOf=o=>o.church?"church":"nl";
+const catOf=o=>o.church?"church":o.cele?"bd":"nl";
 function bdayRow(u,d){return `<div class="rw"><a class="r" href="#member-${esc(u)}" style="text-decoration:none"><span class="dt"><small>${DAYS[d.getDay()]}</small><b>${d.getDate()}</b></span><span style="min-width:0"><h3><i class="mk bd" aria-hidden="true"></i><span data-uid="${esc(u)}">…</span>'s birthday</h3><p>Birthday · tap to see their profile</p></span></a></div>`}
 function bdaysOn(d){const md=pad(d.getMonth()+1)+"-"+pad(d.getDate());return Object.entries(S.self.bdays).filter(([u,b])=>b&&b.show!==false&&b.md===md).map(([u])=>u)}
 function hiddenNote(d){const f=S.calF;if(f==="all")return '<p class="empty">Nothing on this day.</p>';const sv=S.calF;S.calF="all";const n=(dayRows(d).match(/class="rw"/g)||[]).length;S.calF=sv;
@@ -1542,7 +1545,7 @@ function hiddenNote(d){const f=S.calF;if(f==="all")return '<p class="empty">Noth
 function sermonsOn(d){const k=ymd(d);return S.col.notes.filter(n=>n.date===k)}
 function sermonRow(n){const d=pd(n.date);return `<div class="rw"><a class="r" href="#notes-${esc(n.id)}" style="text-decoration:none;color:inherit"><span class="dt"><small>${DAYS[d.getDay()]}</small><b>${d.getDate()}</b></span>
    <span style="min-width:0"><h3><i class="mk nl" aria-hidden="true"></i>${esc(n.title||"Sermon notes")}</h3><p>Sermon notes${n.series?" · "+esc(n.series):""}${n.scripture?" · "+esc(n.scripture):""}</p></span></a></div>`}
-function dayRows(d){const f=S.calF;let h=f==="bday"?"":occOn(d).filter(o=>f==="all"||catOf(o)===f).map(occRow).join("");if(f==="all"||f==="nl")h+=sermonsOn(d).map(sermonRow).join("");if(f==="all"||f==="bday")h+=bdaysOn(d).map(u=>bdayRow(u,d)).join("");return h}
+function dayRows(d){const f=S.calF;let h=occOn(d).filter(o=>f==="all"||catOf(o)===(f==="bday"?"bd":f)).map(occRow).join("");if(f==="all"||f==="bday")h+=bdaysOn(d).map(u=>bdayRow(u,d)).join("");return h}
 /* ---------- files and flyers ---------- */
 const FILE_COLS=["events","rhythm","announcements","posts","notes","opps"];
 const isImg=f=>/^image\//.test(f.type||"");
@@ -1702,8 +1705,8 @@ V.calendar=()=>{
   }else{
     const y=S.month.getFullYear(),m=S.month.getMonth(),first=new Date(y,m,1),st=addD(first,-((first.getDay()+6)%7));
     let cells=["M","T","W","T","F","S","S"].map(d=>`<div class="h">${d}</div>`).join("");
-    for(let i=0;i<42;i++){const d=addD(st,i),f=S.calF,o=f==="bday"?[]:occOn(d).filter(x=>f==="all"||catOf(x)===f),bd=(f==="all"||f==="bday")?bdaysOn(d):[],big=o.some(x=>x.big||x.src==="event");
-      const kinds=[];if(o.some(x=>!x.church)||((f==="all"||f==="nl")&&sermonsOn(d).length))kinds.push("nl");if(o.some(x=>x.church))kinds.push("church");if(bd.length)kinds.push("bd");
+    for(let i=0;i<42;i++){const d=addD(st,i),f=S.calF,o=occOn(d).filter(x=>f==="all"||catOf(x)===(f==="bday"?"bd":f)),bd=(f==="all"||f==="bday")?bdaysOn(d):[],big=o.some(x=>x.big||x.src==="event");
+      const kinds=[];if(o.some(x=>catOf(x)==="nl"))kinds.push("nl");if(o.some(x=>x.church))kinds.push("church");if(bd.length||o.some(x=>x.cele))kinds.push("bd");
       cells+=`<button class="md ${d.getMonth()!==m?"out":""} ${ymd(d)===ymd(today())?"today":""} ${big?"big":""}" aria-selected="${ymd(d)===ymd(S.sel)}" data-act="mday" data-d="${ymd(d)}" aria-label="${d.getDate()} ${MONL[d.getMonth()]}, ${o.length+bd.length} items">${d.getDate()}${kinds.length?`<span class="mks">${kinds.map(k=>`<i class="mk ${k}"></i>`).join("")}</span>`:""}</button>`}
     const selH=dayRows(S.sel);let allH="",allN=0;for(let d=new Date(y,m,1);d.getMonth()===m;d=addD(d,1)){const h=dayRows(d);if(h){allH+=h;allN+=(h.match(/class="rw"/g)||[]).length}}
     body=`<div class="weeknav"><button data-act="mo" data-n="-1" aria-label="Previous month">‹</button><b style="font-family:var(--display);font-size:24px">${MONL[m]} ${y}</b><button data-act="mo" data-n="1" aria-label="Next month">›</button></div>
@@ -1714,7 +1717,7 @@ V.calendar=()=>{
   const rh=S.col.rhythm.slice().sort((a,b)=>(a.freq==="first"?-1:1)-(b.freq==="first"?-1:1)||a.dow-b.dow);
   return `<div class="ph"><h1>Calendar</h1></div>
   <div class="seg"><button data-act="mode" data-m="week" aria-pressed="${S.calMode==="week"}">Week</button><button data-act="mode" data-m="month" aria-pressed="${S.calMode==="month"}">Month</button></div>
-  <div class="chips scroll" role="group" aria-label="Show">${[["all","All",""],["nl","Next Level","nl"],["church","Main church","church"],["bday","Birthdays","bd"]].map(([k,l,mk])=>`<button class="chip" data-act="calf" data-k="${k}" aria-pressed="${S.calF===k}">${mk?`<i class="mk ${mk}" aria-hidden="true"></i>`:""}${l}</button>`).join("")}</div>
+  <div class="chips scroll" role="group" aria-label="Show">${[["all","All",""],["nl","Next Level","nl"],["church","Main church","church"],["bday","Celebrations","bd"]].map(([k,l,mk])=>`<button class="chip" data-act="calf" data-k="${k}" aria-pressed="${S.calF===k}">${mk?`<i class="mk ${mk}" aria-hidden="true"></i>`:""}${l}</button>`).join("")}</div>
   ${body}
   ${rh.length?`<details class="fold"><summary>Our regular rhythm (${rh.length})${ic("chev",2)}</summary><div class="rows">${rh.map(r=>`<div class="r" style="grid-template-columns:minmax(0,1fr) auto;cursor:default"><span><h3>${esc(r.title)}</h3><p>${r.freq==="first"?"First":"Every"} ${DAYL[r.dow]}${r.skipFirst?" (not the first)":""} · ${esc(tr(r.time,r.end))}${r.where?" · "+esc(r.where):""}</p></span>${editLink("rhythm",r.id)}</div>`).join("")}</div></details>`:""}
   ${icsBtn()}`;
