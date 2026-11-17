@@ -12,7 +12,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261117164919";window.NL_TRIAL_VER=V;
+(function(){var V="20261117165522";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -308,6 +308,8 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .fv-img img{max-width:100%;max-height:100%;object-fit:contain}
 .fmiss{opacity:.75;border-style:dashed}.fmiss small{color:var(--bad)!important}
 .ef-rm{flex:none;padding:6px 12px!important;min-height:36px}
+/* The bottom bar's colour carries on below it, so nothing shows through underneath on any iPhone (home bar, in-app browsers, Home Screen apps) */
+.tabs::after{content:"";position:absolute;left:0;right:0;top:100%;height:200px;background:inherit;pointer-events:none}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
 .notes{display:flex;flex-direction:column;gap:14px;font-size:16px;background:var(--surface);border-radius:18px;padding:20px}
