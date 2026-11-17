@@ -652,18 +652,20 @@ pre.wa{white-space:pre-wrap;background:var(--surface);border-radius:14px;padding
   ];
   var q=Q[Math.floor(Math.random()*Q.length)];
   s.querySelector(".sp-q").textContent=q[0];s.querySelector(".sp-ref").textContent=q[1];
-  var still=false;try{still=matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
   var v=s.querySelector("video");
   var done=false;function hide(){if(done)return;done=true;s.classList.add("out");setTimeout(function(){s.remove()},600)}
   window.NL_SPLASH_HIDE=hide;
-  // The 4K film is loaded completely into memory before it starts, so it can never stall part-way.
-  // After the first visit it comes straight from this phone's storage and starts at once.
-  var CACHE="nl-opening-v6",POSTER="op/v6-poster.jpg";
-  var C=[["op/v6-2160-hevc.mp4",'video/mp4; codecs="hvc1.1.6.L153.B0"',24e6],["op/v6-2160-av1.mp4",'video/mp4; codecs="av01.0.12M.08"',31e6],["op/v6-2160-h264.mp4",'video/mp4; codecs="avc1.640033"',34e6]];
-  var LOW="op/v6-1080-h264.mp4";
-  var state="wait";
-  function startStill(){if(state!=="wait")return;state="still";v.poster=POSTER;s.classList.add("still");setTimeout(hide,still?1800:2400)}
-  function startFilm(url){if(state!=="wait")return;v.src=url;v.addEventListener("playing",function(){if(state!=="wait")return;state="play";s.classList.add("play");setTimeout(hide,2450)},{once:true});var p=v.play();if(p&&p.catch)p.catch(startStill)}
+  // First open: the 4K film streams and starts as soon as the first part arrives (no waiting for the whole file).
+  // Straight after it plays, the full file is saved on this phone, so every later open starts instantly from storage.
+  var CACHE="nl-opening-v7",POSTER="op/v7-poster.jpg";
+  var C=[["op/v7-2160-hevc.mp4",'video/mp4; codecs="hvc1.1.6.L153.B0"',16e6],["op/v7-2160-av1.mp4",'video/mp4; codecs="av01.0.12M.08"',19e6],["op/v7-2160-h264.mp4",'video/mp4; codecs="avc1.640033"',17e6]];
+  var LOW="op/v7-1080-h264.mp4";
+  var state="wait",chosen=null;
+  function startStill(){if(state!=="wait")return;state="still";v.poster=POSTER;s.classList.add("still");setTimeout(hide,2200)}
+  function startFilm(src){if(state!=="wait")return;
+    v.addEventListener("playing",function(){if(state!=="wait")return;state="play";s.classList.add("play");setTimeout(hide,2450)},{once:true});
+    v.addEventListener("error",function(){startStill()},{once:true});
+    v.preload="auto";v.src=src;var p=v.play();if(p&&p.catch)p.catch(function(){startStill()})}
   function pick(cb){
     var list=C.slice(),mc=navigator.mediaCapabilities;
     (function next(){var c=list.shift();if(!c){cb(LOW);return}
@@ -671,18 +673,20 @@ pre.wa{white-space:pre-wrap;background:var(--surface);border-radius:14px;padding
       if(!mc||!mc.decodingInfo){cb(c[0]);return}
       mc.decodingInfo({type:"file",video:{contentType:c[1],width:3840,height:2160,bitrate:c[2],framerate:30}}).then(function(r){if(r&&r.supported&&r.smooth)cb(c[0]);else next()},next)})();
   }
-  function getBlob(url){
-    if(!window.caches)return fetch(url).then(function(r){if(!r.ok)throw 0;return r.blob()});
-    return caches.open(CACHE).then(function(c){return c.match(url).then(function(hit){
-      if(hit)return hit.blob();
-      return fetch(url).then(function(r){if(!r.ok)throw 0;c.put(url,r.clone()).catch(function(){});return r.blob()});
-    })});
+  function saveForNextTime(url){ // runs once the opening has finished, so it never slows the film down
+    if(!window.caches)return;
+    setTimeout(function(){caches.open(CACHE).then(function(c){return c.match(url).then(function(hit){if(hit)return;return fetch(url,{cache:"force-cache"}).then(function(r){if(r.ok)return c.put(url,r)})})}).catch(function(){})},2600);
   }
   try{if(window.caches)caches.keys().then(function(ks){ks.forEach(function(k){if(k.indexOf("nl-opening-")===0&&k!==CACHE)caches.delete(k)})})}catch(e){}
-  if(still){startStill()}else{
-    setTimeout(startStill,900);            // never sit on a blank screen: slow connection shows the crisp still instead
-    pick(function(url){getBlob(url).then(function(b){startFilm(URL.createObjectURL(b))}).catch(startStill)});
-  }
+  setTimeout(startStill,2800);   // only if the film truly can't start (no signal, Low Power Mode) do we show the still instead
+  pick(function(url){chosen=url;
+    var fromNet=function(){startFilm(url);saveForNextTime(url)};
+    if(!window.caches){fromNet();return}
+    caches.open(CACHE).then(function(c){return c.match(url)}).then(function(hit){
+      if(!hit){fromNet();return}
+      return hit.blob().then(function(b){if(!b||!b.size){fromNet();return}startFilm(URL.createObjectURL(b))});
+    }).catch(fromNet);
+  });
   s.addEventListener("click",hide);
   }
 })();
