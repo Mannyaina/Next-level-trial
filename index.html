@@ -151,7 +151,7 @@ main{padding-block:6px 120px;padding-left:max(16px,env(safe-area-inset-left,0px)
 .rows{background:var(--surface);border-radius:18px;display:flex;flex-direction:column;overflow:hidden}
 .r{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 16px;background:none;border:0;text-align:left;width:100%;color:inherit}
 .r + .r{border-top:1px solid var(--line)}
-button.r:hover{background:var(--soft)}
+@media (hover:hover){button.r:hover{background:var(--soft)}}
 .dt{text-align:center;line-height:1.05}
 .dt small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .dt b{font-family:var(--display);font-size:24px}
@@ -283,7 +283,7 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .jot-body{width:100%;box-sizing:border-box;min-height:46vh;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:14px 16px;font:500 16px/1.6 inherit;resize:vertical}
 .jot-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
 .jot-tools .chip{padding:7px 13px;font-size:13.5px}
-.jot-all{margin-left:auto;font-weight:700;font-size:14px}
+.jot-all{margin-left:auto;font-weight:700;font-size:14px;color:var(--accent);text-decoration:none}
 .jot-foot{margin-top:18px}
 .jot-del{color:var(--warn,#B3261E)}
 .ics-done{display:flex;gap:8px;align-items:flex-start;margin:0}.ics-done svg{width:16px;height:16px;flex:none;margin-top:3px;color:var(--good)}
@@ -1547,7 +1547,7 @@ function dayRows(d){const f=S.calF;let h=f==="bday"?"":occOn(d).filter(o=>f==="a
 const FILE_COLS=["events","rhythm","announcements","posts","notes","opps"];
 const isImg=f=>/^image\//.test(f.type||"");
 const fsize=n=>n>1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB";
-const fkind=f=>isImg(f)?"Image":/pdf/.test(f.type)?"PDF":/word|document/.test(f.type)?"Word":/powerpoint|presentation/.test(f.type)?"Slides":/excel|sheet/.test(f.type)?"Spreadsheet":"File";
+const fkind=f=>{const t=f.type||"",n=String(f.name||"").toLowerCase();return isImg(f)?"Image":/pdf/.test(t)||/\.pdf$/.test(n)?"PDF":/powerpoint|presentation/.test(t)||/\.(pptx?|key)$/.test(n)?"Slides":/excel|spreadsheet|sheet/.test(t)||/\.(xlsx?|csv|numbers)$/.test(n)?"Spreadsheet":/msword|wordprocessing|opendocument\.text/.test(t)||/\.(docx?|pages|rtf)$/.test(n)?"Word":/^audio\//.test(t)?"Audio":/^video\//.test(t)?"Video":"File"};
 function filesHTML(files,opt){files=(files||[]).filter(f=>f&&f.url);if(!files.length)return "";opt=opt||{};
   const imgs=files.filter(isImg),docs=files.filter(f=>!isImg(f));const show=opt.compact?imgs.slice(0,1):imgs;
   const btn=f=>`data-act="file" data-u="${esc(f.url)}" data-n="${esc(f.name||"")}" data-t="${esc(f.type||"")}"`;
@@ -1920,7 +1920,7 @@ V.notes=()=>{
   const all=S.col.notes.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));const open=S.openNote?all.find(n=>n.id===S.openNote)||currentNote():currentNote();
   if(!open)return `<div class="ph"><h1>Series Notes</h1></div><p class="empty">No notes have been posted yet.</p>`;
   const bc=blankCount(open),rev=Math.min(Number(open.reveal||0),bc);const myNote=(S.mine.notes||{})[open.id]||"";
-  const groups={};all.forEach(n=>{(groups[n.series||"Other"]=groups[n.series||"Other"]||[]).push(n)});
+  const groups={};all.forEach(n=>{(groups[n.series||"Sermons"]=groups[n.series||"Sermons"]||[]).push(n)});
   return `<div class="ph"><span class="hint" style="font-weight:700">${esc(open.series||"Series")}${open.date?" · "+pd(open.date).getDate()+" "+MON[pd(open.date).getMonth()]:""}</span><h1 style="margin-top:2px">${esc(open.title)}</h1><button class="edit" style="font-size:13.5px;margin-top:6px" data-act="share-note" data-id="${esc(open.id)}">Share these notes</button></div>
   ${isLeader()&&bc?`<section class="opp" style="gap:10px"><div class="st" style="font-size:20px">Live reveal<span class="hint">${rev} of ${bc} points shown to everyone</span></div><div class="row"><button class="btn" data-act="reveal" data-id="${esc(open.id)}" data-n="1" ${rev>=bc?"disabled":""}>Reveal next point</button><button class="btn quiet" data-act="reveal" data-id="${esc(open.id)}" data-n="all">Reveal all</button><button class="btn quiet" data-act="reveal" data-id="${esc(open.id)}" data-n="0">Reset</button>${editLink("notes",open.id)}</div></section>`:""}
   ${bc?`<div class="progress" aria-label="${rev} of ${bc} points revealed"><span style="width:${Math.round(rev/bc*100)}%"></span></div>`:""}
