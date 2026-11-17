@@ -17,7 +17,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261117172107";window.NL_TRIAL_VER=V;
+(function(){var V="20261117172748";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -315,11 +315,11 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .ef-rm{flex:none;padding:6px 12px!important;min-height:36px}
 /* The bottom bar's colour carries on below it, so nothing shows through underneath on any iPhone (home bar, in-app browsers, Home Screen apps) */
 .tabs::after{content:"";position:absolute;left:0;right:0;top:100%;height:200px;background:inherit;pointer-events:none}
-#ptr{position:fixed;left:50%;top:60px;z-index:300;width:30px;height:30px;border-radius:50%;background:var(--surface);box-shadow:0 2px 10px -2px rgba(11,32,51,.22);display:grid;place-items:center;transform:translate(-50%,-40px);opacity:0;pointer-events:none}
+#ptr{position:fixed;left:50%;top:60px;z-index:300;width:30px;height:30px;border-radius:50%;background:var(--surface);box-shadow:0 2px 10px -2px rgba(11,32,51,.22);display:grid;place-items:center;transform:translateX(-50%);opacity:0;pointer-events:none}
 #ptr .ptr-ring{width:22px;height:22px;transform:rotate(-90deg)}
 #ptr .ptr-fg{fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;transition:stroke .2s}
 #ptr.ready .ptr-fg{stroke:var(--accent)}
-#ptr.anim,#ptr-l.anim{transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
+#ptr.anim,#ptr-l.anim{transition:opacity .25s ease}
 #ptr.spin .ptr-ring{animation:ptrspin .7s linear infinite}#ptr.spin .ptr-fg{stroke:var(--accent);stroke-dasharray:30 60!important;stroke-dashoffset:0!important}
 #ptr-l{display:none}
 @keyframes ptrspin{from{transform:rotate(-90deg)}to{transform:rotate(270deg)}}
@@ -2315,18 +2315,17 @@ let rq=0,lastScroll=0;
   const view=()=>document.getElementById("view");
   const blocked=()=>!!(document.querySelector("#sheet-root").innerHTML.trim()||document.getElementById("fview")||(document.getElementById("trialnav")&&!document.getElementById("trialnav").hidden)||document.getElementById("splash"));
   const set=d=>{const k=Math.min(1,d/GO),pull=Math.min(d,MAX);
-    const gap=pull*0.55;ind.style.transform=`translate(-50%,${Math.max(-40,gap/2-15)}px) rotate(${k*200}deg)`;ind.style.opacity=String(Math.min(1,d/30));
+    ind.style.opacity=String(Math.min(1,d/30));const v0=view();if(v0){v0.style.transition="transform .25s cubic-bezier(.2,.8,.2,1)";v0.style.transform=d>14?"translateY(50px)":""}
     fg.style.strokeDashoffset=String(C*(1-0.82*k));ind.classList.toggle("ready",d>=GO);
-    const v=view();if(v)v.style.transform=`translateY(${gap}px)`;
+
     if(d>=GO&&!buzzed){buzzed=true;try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}if(d<GO)buzzed=false};
   const reset=()=>{ind.classList.add("anim");lab.classList.add("anim");const v=view();if(v){v.style.transition="transform .3s cubic-bezier(.2,.8,.2,1)";v.style.transform=""}
-    ind.style.transform="translate(-50%,-40px)";ind.style.opacity="0";
+    ind.style.opacity="0";
     setTimeout(()=>{ind.classList.remove("anim");lab.classList.remove("anim");if(v)v.style.transition=""},320)};
-  sh.addEventListener("touchstart",e=>{if(busy||sh.scrollTop>0||blocked()||e.touches.length!==1){y0=null;return}const tb=document.querySelector(".topbar");ind.style.top=((tb&&tb.getBoundingClientRect().bottom)||60)+"px";y0=e.touches[0].clientY;dy=0},{passive:true});
+  sh.addEventListener("touchstart",e=>{if(busy||sh.scrollTop>0||blocked()||e.touches.length!==1){y0=null;return}const tb=document.querySelector(".topbar");ind.style.top=(((tb&&tb.getBoundingClientRect().bottom)||60)+14)+"px";y0=e.touches[0].clientY;dy=0},{passive:true});
   sh.addEventListener("touchmove",e=>{if(y0==null)return;const raw=e.touches[0].clientY-y0;dy=raw>0?raw*0.6:0;if(sh.scrollTop>0){y0=null;reset();return}if(dy>0)set(dy)},{passive:true});
   const end=async()=>{if(y0==null)return;y0=null;if(dy<GO){reset();return}
-    busy=true;ind.classList.add("anim","spin");lab.classList.add("anim");ind.style.transform="translate(-50%,11px)";
-    const v=view();if(v){v.style.transition="transform .3s ease";v.style.transform="translateY(52px)"}
+    busy=true;ind.classList.add("anim","spin");lab.classList.add("anim");ind.style.opacity="1";const v1=view();if(v1)v1.style.transform="translateY(50px)";
     try{sessionStorage.setItem("nl.splash","1")}catch(e){}
     const t0=Date.now(),go=()=>{if(go.done)return;go.done=true;location.reload()};setTimeout(go,2000);
     try{await Promise.race([fetch(location.pathname,{cache:"reload"}),new Promise(r=>setTimeout(r,1800))])}catch(e){}
