@@ -12,7 +12,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261117165522";window.NL_TRIAL_VER=V;
+(function(){var V="20261117165710";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -858,6 +858,7 @@ add('data/users/u-manny','me',{remind:{},teams:[],onboarded:true,notes:{"wwg-abr
  jdemo1:{id:'jdemo1',kind:'thought',title:'Saying yes to serving',body:'Thinking about joining the media team in January. Need to pray about how much time I can give.',sess:'',date:ymdN(-1),at:1,upd:1,answered:false},
  jdemo2:{id:'jdemo2',kind:'prayer',title:'Job interview on Friday',body:'Lord, give me peace and clear words. Your will be done.',sess:'',date:ymdN(-9),at:2,upd:2,answered:true},
  jdemo3:{id:'jdemo3',kind:'sermon',title:'Sunday: faith that moves',body:'Pastor Sam: faith is acting before you see the whole picture.\nTakeaway: stop waiting to feel ready.',sess:'',date:ymdN(-2),at:3,upd:3,answered:false}}});
+add('notes','talk-back',{series:'Sermons',title:'Talk back',date:'2026-11-23',scripture:'1 Peter 5:8',body:'## Talk back\n> Be sober, be vigilant; because your adversary the devil, as a roaring lion, walketh about, seeking whom he may devour. 1 Peter 5:8',reveal:0,createdAt:Date.now(),files:[]});
 add('rhythm','hop-sunday',{title:"Sunday Service · House of Praise",freq:"weekly",dow:0,time:"10:00",end:"12:00",where:"House of Praise",church:true,createdAt:1});
 add('events','hop-thanks',{title:"Thanksgiving Service",date:ymdN(6),time:"10:00",end:"13:00",where:"House of Praise main auditorium",church:true,desc:"Whole-church thanksgiving service.",createdAt:1});
 })();
