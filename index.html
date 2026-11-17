@@ -6,13 +6,18 @@
 <meta name="theme-color" content="#0B2033">
 <meta name="robots" content="noindex">
 <link rel="icon" href="mark-128.png">
-<link rel="apple-touch-icon" href="mark-128.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NL Trial">
 <style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261117170031";window.NL_TRIAL_VER=V;
+(function(){var V="20261117170529";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -310,11 +315,16 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .ef-rm{flex:none;padding:6px 12px!important;min-height:36px}
 /* The bottom bar's colour carries on below it, so nothing shows through underneath on any iPhone (home bar, in-app browsers, Home Screen apps) */
 .tabs::after{content:"";position:absolute;left:0;right:0;top:100%;height:200px;background:inherit;pointer-events:none}
-#ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:300;transform:translate(-50%,-56px);opacity:0;display:flex;align-items:center;gap:8px;padding:8px 14px 8px 8px;border-radius:999px;background:var(--surface);color:var(--ink);box-shadow:0 8px 24px -10px rgba(0,0,0,.45);border:1px solid var(--line);font-weight:700;font-size:13.5px;pointer-events:none}
-#ptr .ptr-c{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--soft)}#ptr svg{width:16px;height:16px;transition:transform .15s}
-#ptr.ready .ptr-c{background:var(--accent);color:var(--bg)}
-#ptr.spin svg{animation:ptrspin .8s linear infinite}#ptr.spin svg path{d:path("M21 12a9 9 0 1 1-6.2-8.6")}
-@keyframes ptrspin{to{transform:rotate(360deg)}}
+#ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 92px);z-index:300;width:46px;height:46px;border-radius:50%;background:#0B2033;box-shadow:0 10px 26px -8px rgba(11,32,51,.55),0 0 0 4px rgba(254,248,230,.9);display:grid;place-items:center;transform:translate(-50%,-60px);opacity:0;pointer-events:none}
+#ptr .ptr-ring{position:absolute;inset:0;width:46px;height:46px;transform:rotate(-90deg)}
+#ptr .ptr-bg{fill:none;stroke:rgba(254,248,230,.18);stroke-width:3}
+#ptr .ptr-fg{fill:none;stroke:#E7C27D;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .05s linear}
+#ptr .ptr-nl{font:700 15px/1 "Cormorant Garamond",Georgia,serif;color:#FEF8E6;letter-spacing:-.02em}
+#ptr.ready{box-shadow:0 10px 26px -8px rgba(11,32,51,.55),0 0 0 4px #E7C27D}
+#ptr.anim,#ptr-l.anim{transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
+#ptr.spin .ptr-ring{animation:ptrspin .9s linear infinite}#ptr.spin .ptr-fg{stroke-dasharray:60 200!important;stroke-dashoffset:0!important}
+#ptr-l{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 92px);z-index:300;transform:translate(-50%,-4px);opacity:0;pointer-events:none;padding:5px 12px;border-radius:999px;background:#0B2033;color:#FEF8E6;font-weight:700;font-size:12.5px;white-space:nowrap}
+@keyframes ptrspin{from{transform:rotate(-90deg)}to{transform:rotate(270deg)}}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
 .notes{display:flex;flex-direction:column;gap:14px;font-size:16px;background:var(--surface);border-radius:18px;padding:20px}
@@ -2266,20 +2276,32 @@ let rq=0,lastScroll=0;
   if(window.visualViewport)visualViewport.addEventListener("resize",()=>setTimeout(fix,150));
   window.addEventListener("pageshow",fix);document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(fix,50)});
 })();
-/* Pull down from the top of any page to refresh: fetches the newest copy of the app straight away */
+/* Pull down from the top of any page to refresh: the page follows your finger, a ring fills, and on release the newest copy of the app loads */
 (function(){const sh=document.querySelector(".shell");if(!sh||!("ontouchstart" in window))return;
-  const ind=document.createElement("div");ind.id="ptr";ind.setAttribute("aria-hidden","true");ind.innerHTML='<span class="ptr-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span><span class="ptr-t">Pull to refresh</span>';document.body.appendChild(ind);
-  let y0=null,dy=0,busy=false;const MAX=110,GO=72;
-  const blocked=()=>!!(document.querySelector("#sheet-root").innerHTML.trim()||document.getElementById("fview")||(document.getElementById("trialnav")&&!document.getElementById("trialnav").hidden)||(document.getElementById("splash")));
-  const show=d=>{const k=Math.min(1,d/GO);ind.style.transform=`translate(-50%,${Math.min(d,MAX)-56}px)`;ind.style.opacity=String(Math.min(1,d/30));ind.classList.toggle("ready",d>=GO);ind.querySelector(".ptr-t").textContent=d>=GO?"Release to refresh":"Pull to refresh";ind.querySelector("svg").style.transform=`rotate(${d>=GO?180:k*150}deg)`};
-  const hide=()=>{ind.style.transition="transform .25s ease,opacity .25s ease";ind.style.transform="translate(-50%,-56px)";ind.style.opacity="0";setTimeout(()=>{ind.style.transition=""},260)};
-  sh.addEventListener("touchstart",e=>{if(busy||sh.scrollTop>0||blocked()||e.touches.length!==1){y0=null;return}y0=e.touches[0].clientY;dy=0},{passive:true});
-  sh.addEventListener("touchmove",e=>{if(y0==null)return;dy=(e.touches[0].clientY-y0)*0.55;if(dy<=0||sh.scrollTop>0){if(dy<=0){ind.style.opacity="0"}return}show(dy)},{passive:true});
-  sh.addEventListener("touchend",async()=>{if(y0==null)return;y0=null;if(dy<GO){hide();return}
-    busy=true;ind.classList.add("spin");ind.querySelector(".ptr-t").textContent="Refreshing…";ind.style.transform="translate(-50%,24px)";
+  const ind=document.createElement("div");ind.id="ptr";ind.setAttribute("aria-hidden","true");
+  ind.innerHTML='<svg class="ptr-ring" viewBox="0 0 48 48"><circle class="ptr-bg" cx="24" cy="24" r="20"/><circle class="ptr-fg" cx="24" cy="24" r="20"/></svg><span class="ptr-nl">NL</span>';
+  const lab=document.createElement("div");lab.id="ptr-l";lab.setAttribute("aria-hidden","true");document.body.appendChild(ind);document.body.appendChild(lab);
+  const fg=ind.querySelector(".ptr-fg"),C=2*Math.PI*20;fg.style.strokeDasharray=C;fg.style.strokeDashoffset=C;
+  let y0=null,dy=0,busy=false,buzzed=false;const MAX=120,GO=80;
+  const view=()=>document.getElementById("view");
+  const blocked=()=>!!(document.querySelector("#sheet-root").innerHTML.trim()||document.getElementById("fview")||(document.getElementById("trialnav")&&!document.getElementById("trialnav").hidden)||document.getElementById("splash"));
+  const set=d=>{const k=Math.min(1,d/GO),pull=Math.min(d,MAX);
+    const gap=pull*0.8;ind.style.transform=`translate(-50%,${Math.max(-60,gap/2-23)}px) scale(${0.6+0.4*k})`;ind.style.opacity=String(Math.min(1,d/24));
+    fg.style.strokeDashoffset=String(C*(1-k));ind.classList.toggle("ready",d>=GO);
+    const v=view();if(v)v.style.transform=`translateY(${gap}px)`;
+    if(d>=GO&&!buzzed){buzzed=true;try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}if(d<GO)buzzed=false};
+  const reset=()=>{ind.classList.add("anim");lab.classList.add("anim");const v=view();if(v){v.style.transition="transform .3s cubic-bezier(.2,.8,.2,1)";v.style.transform=""}
+    ind.style.transform="translate(-50%,-60px)";ind.style.opacity="0";
+    setTimeout(()=>{ind.classList.remove("anim");lab.classList.remove("anim");if(v)v.style.transition=""},320)};
+  sh.addEventListener("touchstart",e=>{if(busy||sh.scrollTop>0||blocked()||e.touches.length!==1){y0=null;return}const tb=document.querySelector(".topbar");ind.style.top=((tb&&tb.getBoundingClientRect().bottom)||60)+"px";y0=e.touches[0].clientY;dy=0},{passive:true});
+  sh.addEventListener("touchmove",e=>{if(y0==null)return;const raw=e.touches[0].clientY-y0;dy=raw>0?raw*0.6:0;if(sh.scrollTop>0){y0=null;reset();return}if(dy>0)set(dy)},{passive:true});
+  const end=async()=>{if(y0==null)return;y0=null;if(dy<GO){reset();return}
+    busy=true;ind.classList.add("anim","spin");lab.classList.add("anim");ind.style.transform="translate(-50%,13px) scale(1)";
+    const v=view();if(v){v.style.transition="transform .3s ease";v.style.transform="translateY(72px)"}
     try{sessionStorage.setItem("nl.splash","1")}catch(e){}
-    try{await fetch(location.pathname,{cache:"reload"})}catch(e){}
-    location.reload()},{passive:true});
+    const t0=Date.now();try{await fetch(location.pathname,{cache:"reload"})}catch(e){}
+    setTimeout(()=>location.reload(),Math.max(0,500-(Date.now()-t0)))};
+  sh.addEventListener("touchend",end,{passive:true});sh.addEventListener("touchcancel",()=>{if(y0!=null){y0=null;reset()}},{passive:true});
 })();
 function toTop(){const s=document.querySelector(".shell");if(s)s.scrollTop=0;window.scrollTo(0,0)}
 function render(force){
