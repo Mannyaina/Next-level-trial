@@ -295,6 +295,7 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .fv-n{flex:1;min-width:0;font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
 .fv-b{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer}.fv-b svg{width:20px;height:20px}.fv-bar .fv-b:first-child svg{transform:rotate(45deg)}
 .fv-img{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0px);touch-action:pinch-zoom}
+.fv-doc{flex:1;min-height:0;width:100%;border:0;background:#fff}
 .fv-img img{max-width:100%;max-height:100%;object-fit:contain}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
@@ -1577,6 +1578,16 @@ function viewImage(u,n,t){const old=$("#fview");if(old)old.remove();const v=docu
   v.innerHTML=`<div class="fv-bar"><button class="fv-b" data-act="fv-close" aria-label="Close">${ic("plus",2.2)}</button><span class="fv-n">${esc(n||"")}</span><button class="fv-b" data-act="file-share" data-u="${esc(u)}" data-n="${esc(n||"")}" data-t="${esc(t||"")}" aria-label="Share">${ic("share",2)}</button></div><div class="fv-img" data-act="fv-close"><img src="${esc(u)}" alt="${esc(n||"Image")}"></div>`;
   document.body.appendChild(v);document.documentElement.classList.add("locked")}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#fview")){$("#fview").remove();document.documentElement.classList.remove("locked")}});
+/* Open a file straight away. Files on the server open in the phone's own viewer.
+   Files that only exist inside this page (the trial's pretend uploads) are shown here instead, because a separate window can't reach them. */
+function openFile(u,n,t){t=t||"";if(/^image\//.test(t)){viewImage(u,n,t);return}
+  if(!/^blob:/.test(u)){window.open(u,"_blank","noopener");return}
+  if(/pdf/.test(t)||/\.pdf$/i.test(n||"")){viewDoc(u,n,t);return}
+  const a=document.createElement("a");a.href=u;a.download=n||"file";document.body.appendChild(a);a.click();a.remove();toast("Opening "+(n||"the file")+"…")}
+function viewDoc(u,n,t){const old=$("#fview");if(old)old.remove();const v=document.createElement("div");v.id="fview";v.setAttribute("role","dialog");v.setAttribute("aria-label",n||"File");
+  v.innerHTML=`<div class="fv-bar"><button class="fv-b" data-act="fv-close" aria-label="Close">${ic("plus",2.2)}</button><span class="fv-n">${esc(n||"")}</span><button class="fv-b" data-act="file-share" data-u="${esc(u)}" data-n="${esc(n||"")}" data-t="${esc(t||"")}" aria-label="Share">${ic("share",2)}</button></div><iframe class="fv-doc" src="${esc(u)}" title="${esc(n||"File")}"></iframe>`;
+  document.body.appendChild(v);document.documentElement.classList.add("locked")}
+document.addEventListener("click",e=>{const fo=e.target.closest&&e.target.closest("a.fopen");if(!fo||!/^blob:/.test(fo.href))return;e.preventDefault();const r=fo.closest(".frow"),sb=r&&r.querySelector(".fshare");openFile(fo.href,sb?sb.dataset.n:"",sb?sb.dataset.t:"")},true);
 function dlUrl(u,n){return u+(u.includes("?")?"&":"?")+"download="+encodeURIComponent(n||"file")}
 function fileSheet(u,n,t){const img=/^image\//.test(t);
   openSheet(`<div class="sh-head"><h2 style="font-size:22px;overflow-wrap:anywhere">${esc(n||"File")}</h2><button class="icon-b" data-act="close" aria-label="Close">${ic("plus",2)}</button></div>
@@ -2316,7 +2327,7 @@ document.addEventListener("click",async e=>{
   if(a==="ntype"){S.mine.notify=Object.assign({},S.mine.notify||{});S.mine.notify[d.k]=b.checked;saveMine(true);return}
   if(a==="more"){const k=d.k;OPEN.has(k)?OPEN.delete(k):OPEN.add(k);const el=document.querySelector(`p[data-clamp="${CSS.escape(k)}"]`);if(el){el.classList.toggle("open",OPEN.has(k));b.textContent=OPEN.has(k)?"Show less":"Read more";b.hidden=false;if(!OPEN.has(k))el.closest("article")?.scrollIntoView({block:"nearest"})}return}
   if(a==="lead-alerts"){S.mine.leaderAlerts=S.mine.leaderAlerts===false;saveMine(true);toast(S.mine.leaderAlerts===false?"Leader alerts off":"Leader alerts on");if(S.sheetKind==="notifs")notifSheet();return}
-  if(a==="file"){if(/^image\//.test(d.t||"")){viewImage(d.u,d.n,d.t)}else{window.open(d.u,"_blank","noopener")}return}
+  if(a==="file"){openFile(d.u,d.n,d.t);return}
   if(a==="fv-close"){const v=$("#fview");if(v)v.remove();document.documentElement.classList.remove("locked");return}
   if(a==="file-share"){shareFile(d.u,d.n,d.t);return}
   if(a==="push-on"){pushOn();return}
