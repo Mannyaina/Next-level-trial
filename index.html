@@ -10,14 +10,14 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="NL Trial">
 <style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261117170529";window.NL_TRIAL_VER=V;
+(function(){var V="20261117171013";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -657,7 +657,7 @@ pre.wa{white-space:pre-wrap;background:var(--surface);border-radius:14px;padding
 :root[data-look="neon"] .tabs a[aria-current="page"]{color:#B8FF3D}
 :root[data-look="neon"] .tabs a[aria-current="page"] svg{stroke:#B8FF3D}
 /* Tab bar stays docked to the very bottom in every design */
-:root[data-look] .tabs{left:0;right:0;bottom:0;border-radius:20px 20px 0 0;border-width:1px 0 0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+:root[data-look] .tabs{left:0;right:0;bottom:0;border-radius:20px 20px 0 0;border-width:1px 0 0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4)}
 :root[data-look="neon"] .tab-post .tp{background:#B8FF3D;color:#070F1C;box-shadow:0 0 16px rgba(184,255,61,.45)}
 :root[data-look="neon"] .fab{background:#B8FF3D;color:#070F1C;box-shadow:0 0 22px rgba(184,255,61,.45)}
 :root[data-look="neon"] .react[aria-pressed="true"]{background:#1E3214;color:#B8FF3D}
@@ -2299,8 +2299,9 @@ let rq=0,lastScroll=0;
     busy=true;ind.classList.add("anim","spin");lab.classList.add("anim");ind.style.transform="translate(-50%,13px) scale(1)";
     const v=view();if(v){v.style.transition="transform .3s ease";v.style.transform="translateY(72px)"}
     try{sessionStorage.setItem("nl.splash","1")}catch(e){}
-    const t0=Date.now();try{await fetch(location.pathname,{cache:"reload"})}catch(e){}
-    setTimeout(()=>location.reload(),Math.max(0,500-(Date.now()-t0)))};
+    const t0=Date.now(),go=()=>{if(go.done)return;go.done=true;location.reload()};setTimeout(go,2000);
+    try{await Promise.race([fetch(location.pathname,{cache:"reload"}),new Promise(r=>setTimeout(r,1800))])}catch(e){}
+    setTimeout(go,Math.max(0,450-(Date.now()-t0)))};
   sh.addEventListener("touchend",end,{passive:true});sh.addEventListener("touchcancel",()=>{if(y0!=null){y0=null;reset()}},{passive:true});
 })();
 function toTop(){const s=document.querySelector(".shell");if(s)s.scrollTop=0;window.scrollTo(0,0)}
