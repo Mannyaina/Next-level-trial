@@ -285,6 +285,7 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .jot-all{margin-left:auto;font-weight:700;font-size:14px}
 .jot-foot{margin-top:18px}
 .jot-del{color:var(--warn,#B3261E)}
+.ics-done{display:flex;gap:8px;align-items:flex-start;margin:0}.ics-done svg{width:16px;height:16px;flex:none;margin-top:3px;color:var(--good)}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
 .notes{display:flex;flex-direction:column;gap:14px;font-size:16px;background:var(--surface);border-radius:18px;padding:20px}
@@ -1366,6 +1367,7 @@ const P={
  news:'<path d="M4 4h13v16H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v10a2 2 0 0 1-2 2"/><path d="M8 8h5M8 12h5M8 16h3"/>',
  more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
  opp:'<path d="M3 7h18v13H3z"/><path d="M8 7V4h8v3"/>',
+ check:'<path d="m5 12 5 5 9-10"/>',
  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
  mynotes:'<path d="M5 4h9M5 9h7M5 14h4"/><path d="m13 20 .8-3.6 6-6a1.6 1.6 0 0 1 2.3 2.3l-6 6z"/>',
@@ -1411,7 +1413,7 @@ const LEGACY={"whats-on":"calendar",community:"news",grow:"notes"};
 function readRoute(){let h=decodeURIComponent((location.hash||"").slice(1));if(LEGACY[h])h=LEGACY[h];
   if(h.startsWith("event-")){S.deepEvent=h.slice(6);h="events"}else if(h.startsWith("notes-")){S.openNote=h.slice(6);h="notes"}else if(h.startsWith("member-")){S.memberId=h.slice(7);h="member"}else if(h.startsWith("mynote-")){S.jotId=h.slice(7);h="mynote"}
   S.route=ALLR.includes(h)?h:"home";if((S.route==="leaders"||S.route==="people"||S.route==="birthdays")&&S.ready&&!S.admin)S.route="home"}
-window.addEventListener("hashchange",()=>{if($("#sheet-root").innerHTML)closeSheet();S.openNote=null;readRoute();render(true);toTop()});
+window.addEventListener("hashchange",()=>{if(S.route==="mynote"){const b=(S.mine.book||{})[S.jotId];if(b&&!String(b.title||"").trim()&&!String(b.body||"").trim()){delete S.mine.book[b.id];saveMine(true)}}if($("#sheet-root").innerHTML)closeSheet();S.openNote=null;readRoute();render(true);toTop()});
 
 /* ---------- calendar engine ---------- */
 function occOn(d){
@@ -1504,9 +1506,16 @@ function rhythmEvent(r){let s=pd(r.from)||today();if(s<today())s=today();let d=s
   for(let i=0;i<70;i++){const x=addD(s,i);if(x.getDay()===Number(r.dow)&&(r.freq!=="first"||x.getDate()<=7)&&!(r.freq==="weekly"&&r.skipFirst&&x.getDate()<=7)){d=x;break}}
   const c=DOWC[r.dow];let rule=r.freq==="first"?"FREQ=MONTHLY;BYDAY=1"+c:(r.skipFirst?"FREQ=MONTHLY;BYDAY=2"+c+",3"+c+",4"+c+",5"+c:"FREQ=WEEKLY;BYDAY="+c);
   if(r.to)rule+=";UNTIL="+r.to.replace(/-/g,"")+"T235959";return {uid:"r-"+r.id,date:ymd(d),time:r.time,end:r.end,title:r.title,where:r.where,desc:r.desc,rrule:rule}}
+function icsIds(){return S.col.rhythm.map(r=>"r-"+r.id).concat(S.col.events.filter(e=>e.date>=ymd(today())).map(e=>"e-"+e.id+"@"+e.date+(e.time||"")))}
+function icsBtn(){const had=S.mine.icsIds;const all=icsIds();
+  if(!had||!had.length)return `<button class="btn ghost small" style="align-self:flex-start" data-act="ics" data-k="all">${ic("cal")} Add everything to my phone calendar</button>`;
+  const fresh=all.filter(i=>!had.includes(i)).length;
+  if(!fresh)return `<p class="hint ics-done">${ic("check",2)} Everything is in your phone calendar. If something new is added, a button will appear here.</p>`;
+  return `<button class="btn ghost small" style="align-self:flex-start" data-act="ics" data-k="new">${ic("cal")} Add ${fresh} new ${fresh===1?"date":"dates"} to my phone calendar</button>`}
 async function exportICS(which){
   const ev=[];
-  if(which==="all"){S.col.rhythm.forEach(r=>ev.push(vevent(rhythmEvent(r))));S.col.events.filter(e=>e.date>=ymd(today())).forEach(e=>ev.push(vevent({uid:"e-"+e.id,...e,desc:(e.tbc?"Date to be confirmed. ":"")+(e.desc||"")})))}
+  const done=which==="all"||which==="new";const had=which==="new"?(S.mine.icsIds||[]):[];
+  if(done){S.col.rhythm.forEach(r=>{if(!had.includes("r-"+r.id))ev.push(vevent(rhythmEvent(r)))});S.col.events.filter(e=>e.date>=ymd(today())).forEach(e=>{if(!had.includes("e-"+e.id+"@"+e.date+(e.time||"")))ev.push(vevent({uid:"e-"+e.id,...e,desc:(e.tbc?"Date to be confirmed. ":"")+(e.desc||"")}))})}
   else if(which.startsWith("r:")){const r=S.col.rhythm.find(x=>x.id===which.slice(2));if(r)ev.push(vevent(rhythmEvent(r)))}
   else if(which.startsWith("e:")){const e=S.col.events.find(x=>x.id===which.slice(2));if(e)ev.push(vevent({uid:"e-"+e.id,...e}))}
   if(!ev.length){toast("Nothing to add yet.");return}
@@ -1699,7 +1708,7 @@ V.calendar=()=>{
   <div class="chips scroll" role="group" aria-label="Show">${[["all","All",""],["nl","Next Level","nl"],["church","Main church","church"],["bday","Birthdays","bd"]].map(([k,l,mk])=>`<button class="chip" data-act="calf" data-k="${k}" aria-pressed="${S.calF===k}">${mk?`<i class="mk ${mk}" aria-hidden="true"></i>`:""}${l}</button>`).join("")}</div>
   ${body}
   ${rh.length?`<details class="fold"><summary>Our regular rhythm (${rh.length})${ic("chev",2)}</summary><div class="rows">${rh.map(r=>`<div class="r" style="grid-template-columns:minmax(0,1fr) auto;cursor:default"><span><h3>${esc(r.title)}</h3><p>${r.freq==="first"?"First":"Every"} ${DAYL[r.dow]}${r.skipFirst?" (not the first)":""} · ${esc(tr(r.time,r.end))}${r.where?" · "+esc(r.where):""}</p></span>${editLink("rhythm",r.id)}</div>`).join("")}</div></details>`:""}
-  <button class="btn ghost small" style="align-self:flex-start" data-act="ics" data-k="all">${ic("cal")} Add everything to my phone calendar</button>`;
+  ${icsBtn()}`;
 };
 V.events=()=>{
   const t=ymd(today());const up=S.col.events.filter(e=>e.date>=t).sort((a,b)=>a.date.localeCompare(b.date)),past=S.col.events.filter(e=>e.date<t).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
@@ -1844,10 +1853,10 @@ function todayIso(){const d=new Date();return d.getFullYear()+"-"+String(d.getMo
 function jotNew(kind,sess){const id="j"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);const n=sess?S.col.notes.find(x=>x.id===sess):null;
   S.mine.book=S.mine.book||{};S.mine.book[id]={id,kind:kind||"thought",title:n?n.title:"",body:"",sess:sess||"",date:n&&n.date||todayIso(),at:Date.now(),upd:Date.now(),answered:false};saveMine(true);return id}
 function jotCard(e){const k=e.kind;const col=k==="sermon"?"var(--c-nl)":k==="prayer"?"var(--c-bd)":"var(--muted)";
-  const prev=(e.body||"").replace(/\s+/g," ").trim().slice(0,140);
+  const lines=String(e.body||"").split("\n").map(x=>x.trim()).filter(Boolean);const head=e.title||(lines[0]||"").slice(0,70);const prev=(e.title?lines:lines.slice(1)).join(" ").slice(0,140);
   return `<a class="jot" href="#mynote-${esc(e.id)}" data-text="${esc(((e.title||"")+" "+(e.body||"")+" "+(e.series||"")).toLowerCase())}" data-kind="${esc(k)}">
    <span class="jot-k" style="color:${col}">${esc(jotLabel(e).toUpperCase())}${k==="prayer"&&e.answered?`<b class="jot-ans">Answered</b>`:""}</span>
-   <h3>${esc(e.title||(prev?prev.slice(0,48):"Untitled"))}</h3>${prev&&e.title?`<p>${esc(prev)}</p>`:""}</a>`}
+   <h3>${esc(head||"Untitled")}</h3>${prev?`<p>${esc(prev)}</p>`:""}</a>`}
 V.mynotes=()=>{
   if(!S.uid)return `<div class="ph"><h1>My notes</h1></div><p class="empty">Sign in to keep private notes.</p>`;
   const all=jotAll(),f=S.jotF||"all",list=f==="all"?all:all.filter(e=>e.kind===f);
@@ -2165,7 +2174,7 @@ function checkClamps(root){(root||document).querySelectorAll("p[data-clamp]").fo
 addEventListener("resize",()=>checkClamps());if(document.fonts)document.fonts.ready.then(()=>checkClamps());
 function notifList(){return (S.col.notifications||[]).slice().sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,30)}
 function unread(){const seen=S.mine.seenAt||0;return notifList().filter(n=>(n.at||0)>seen).length}
-function updateBell(){const b=$("#bellbtn");if(!b)return;b.hidden=!S.uid;if(!b.dataset.ok){b.innerHTML=ic("bell")+'<i class="dot" hidden></i>';b.dataset.ok="1"}
+function updateBell(){const b=$("#bellbtn");if(!b)return;const n0=S.mineLoaded?unread():0;b.hidden=!S.uid||(!!S.pushOn&&!n0);if(!b.dataset.ok){b.innerHTML=ic("bell")+'<i class="dot" hidden></i>';b.dataset.ok="1"}
   const n=S.mineLoaded?unread():0;b.querySelector(".dot").hidden=!n;b.setAttribute("aria-label",n?`Notifications, ${n} new`:"Notifications")}
 function pushStatus(){if(S.pushOn)return "On for this device";if(NP()&&NP().needsHomeScreen())return "Add the app to your Home Screen first";if(!pushAvail())return "Not available in this browser";if(S.pushPerm==="denied")return "Blocked in your browser settings";return "Off. Tap to turn on"}
 function pushBox(){
@@ -2184,6 +2193,14 @@ function notifSheet(){
 async function pushOn(){try{const r=await NP().enable();await refreshPush();if(r==="granted"){toast("Notifications on");try{await NP().test()}catch(e){}}else toast(r==="denied"?"Notifications blocked. You can allow them in your settings.":"Notifications not turned on")}catch(e){toast("Couldn't turn on notifications. Try again.")}if(S.sheetKind==="notifs")notifSheet()}
 let rq=0,lastScroll=0;
 ["scroll","touchmove","wheel"].forEach(t=>addEventListener(t,()=>{lastScroll=performance.now()},{passive:true,capture:true}));
+(function(){if(!matchMedia("(max-width:959px)").matches)return;
+  const typing=()=>{const ae=document.activeElement;return !!(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))};
+  const fix=()=>{if((window.scrollY||document.documentElement.scrollTop||document.body.scrollTop)&&!typing()){window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0}};
+  window.addEventListener("scroll",()=>setTimeout(fix,80),{passive:true});
+  document.addEventListener("focusout",()=>setTimeout(fix,150));
+  if(window.visualViewport)visualViewport.addEventListener("resize",()=>setTimeout(fix,150));
+  window.addEventListener("pageshow",fix);document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(fix,50)});
+})();
 function toTop(){const s=document.querySelector(".shell");if(s)s.scrollTop=0;window.scrollTo(0,0)}
 function render(force){
   if(force===true){cancelAnimationFrame(rq);rq=0;return doRender(true)}
@@ -2215,7 +2232,7 @@ document.addEventListener("click",async e=>{
   if(a==="close-nav"){closeSheet();return}
   if(a==="detail"){openDetail(d.k,d.d);return}
   if(a==="remind"){if(!S.uid)return;const on=!S.mine.remind[d.k];if(on)S.mine.remind[d.k]=Date.now();else delete S.mine.remind[d.k];saveMine();render();toast(on?(S.pushOn?"Reminder on. We'll notify you an hour before.":"Reminder on. Turn on notifications to get an alert."):"Reminder off");return}
-  if(a==="ics"){exportICS(d.k);return}
+  if(a==="ics"){await exportICS(d.k);if(d.k==="all"||d.k==="new"){S.mine.icsIds=Array.from(new Set((S.mine.icsIds||[]).concat(icsIds()))).slice(-400);saveMine(true);render(true)}return}
   if(a==="rsvp"){const on=await toggleMap("rsvps","events",d.id);if(on!==undefined)toast(on?"See you there":"RSVP removed");return}
   if(a==="react"){toggleMap("reacts","posts",d.id);return}
   if(a==="emo"){setReact(d.id,d.e);return}
@@ -2333,7 +2350,7 @@ readRoute();render();
     first.add(c);render()},()=>{clearTimeout(timer);render()})}catch(e){}});
   SELF.forEach(c=>{try{db.collection(c).onSnapshot(s=>{const m={};s.docs.forEach(x=>m[x.id]=x.data());
     if(S.uid&&s.metadata.hasPendingWrites&&S.self[c][S.uid]&&!m[S.uid])m[S.uid]=S.self[c][S.uid];S.self[c]=m;render()},()=>{})}catch(e){}});
-  if(S.uid){try{db.doc("data/users/"+S.uid+"/me").onSnapshot(s=>{if(!mineT){const d=s.exists?(s.data()||{}):{};S.mine={remind:Object.assign({},d.remind||{}),notes:Object.assign({},d.notes||{}),book:Object.assign({},d.book||{}),teams:(d.teams||[]).slice(),onboarded:!!d.onboarded,seenAt:Number(d.seenAt||0),leaderAlerts:d.leaderAlerts!==false,notify:Object.assign({},d.notify||{})}}
+  if(S.uid){try{db.doc("data/users/"+S.uid+"/me").onSnapshot(s=>{if(!mineT){const d=s.exists?(s.data()||{}):{};S.mine={remind:Object.assign({},d.remind||{}),notes:Object.assign({},d.notes||{}),book:Object.assign({},d.book||{}),icsIds:Array.isArray(d.icsIds)?d.icsIds.slice():[],teams:(d.teams||[]).slice(),onboarded:!!d.onboarded,seenAt:Number(d.seenAt||0),leaderAlerts:d.leaderAlerts!==false,notify:Object.assign({},d.notify||{})}}
       if(!s.metadata.fromCache)S.mineLoaded=true;render()},()=>{S.mineLoaded=true})}catch(e){}}
   if(room){try{room.onPeers(ch=>{S.peers=ch.peers||[];renderOnline()});room.presence({here:true}).catch(()=>{})}catch(e){S.room=null}}
 })();
