@@ -10,6 +10,15 @@
 <style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
 <body>
+<script>
+/* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
+(function(){var V="20261117164919";window.NL_TRIAL_VER=V;
+  function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
+    if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
+    fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
+  check();document.addEventListener("visibilitychange",function(){if(!document.hidden)check()});window.addEventListener("pageshow",function(e){if(e.persisted)check()});
+})();
+</script>
 <title>Next Level Look Trial</title>
 <script>
 (function(){
