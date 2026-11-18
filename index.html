@@ -17,7 +17,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261118173428";window.NL_TRIAL_VER=V;
+(function(){var V="20261118173625";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -340,7 +340,9 @@ input.af-new,textarea.af-new{box-shadow:0 0 0 2px #E7C27D;background-color:rgba(
 .ios-ic{width:26px;height:26px;flex:none;color:var(--accent)}.ios-chev{width:15px;height:15px;flex:none;color:var(--muted);opacity:.6}
 .ios-date{width:42px;height:42px;flex:none;border-radius:11px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:16px;line-height:1}
 .ios-search{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:11px;background:var(--soft);color:var(--muted);margin-top:6px}.ios-search svg{width:17px;height:17px;flex:none}
-.ios-search input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:400 17px inherit;outline:none;height:100%}
+.ios-search input,.ios-search input:focus{flex:1;min-width:0;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:0!important;color:var(--ink);font:400 17px inherit;outline:none;height:100%;-webkit-appearance:none;appearance:none}
+.ios-search:focus-within{box-shadow:0 0 0 2px var(--accent)}
+.ios-search input::-webkit-search-cancel-button{-webkit-appearance:none}
 .ios-foot{margin:12px 4px 0;font-size:13.5px;color:var(--muted);line-height:1.45}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
@@ -2379,17 +2381,17 @@ let rq=0,lastScroll=0;
   const view=()=>document.getElementById("view");
   const blocked=()=>!!(document.querySelector("#sheet-root").innerHTML.trim()||document.getElementById("fview")||(document.getElementById("trialnav")&&!document.getElementById("trialnav").hidden)||document.getElementById("splash"));
   const set=d=>{const k=Math.min(1,d/GO),pull=Math.min(d,MAX);
-    ind.style.opacity=String(Math.min(1,d/30));const v0=view();if(v0){v0.style.transition="transform .25s cubic-bezier(.2,.8,.2,1)";v0.style.transform=d>14?"translateY(50px)":""}
+    ind.style.opacity=String(Math.min(1,d/30));const v0=view();if(v0){v0.style.transition="margin-top .25s cubic-bezier(.2,.8,.2,1)";v0.style.marginTop=d>14?"50px":""}
     fg.style.strokeDashoffset=String(C*(1-0.82*k));ind.classList.toggle("ready",d>=GO);
 
     if(d>=GO&&!buzzed){buzzed=true;try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}if(d<GO)buzzed=false};
-  const reset=()=>{ind.classList.add("anim");lab.classList.add("anim");const v=view();if(v){v.style.transition="transform .3s cubic-bezier(.2,.8,.2,1)";v.style.transform=""}
+  const reset=()=>{ind.classList.add("anim");lab.classList.add("anim");const v=view();if(v){v.style.transition="margin-top .3s cubic-bezier(.2,.8,.2,1)";v.style.marginTop=""}
     ind.style.opacity="0";
     setTimeout(()=>{ind.classList.remove("anim");lab.classList.remove("anim");if(v)v.style.transition=""},320)};
   sh.addEventListener("touchstart",e=>{if(busy||sh.scrollTop>0||blocked()||e.touches.length!==1){y0=null;return}const tb=document.querySelector(".topbar");ind.style.top=(((tb&&tb.getBoundingClientRect().bottom)||60)+14)+"px";y0=e.touches[0].clientY;dy=0},{passive:true});
   sh.addEventListener("touchmove",e=>{if(y0==null)return;const raw=e.touches[0].clientY-y0;dy=raw>0?raw*0.6:0;if(sh.scrollTop>0){y0=null;reset();return}if(dy>0)set(dy)},{passive:true});
   const end=async()=>{if(y0==null)return;y0=null;if(dy<GO){reset();return}
-    busy=true;ind.classList.add("anim","spin");lab.classList.add("anim");ind.style.opacity="1";const v1=view();if(v1)v1.style.transform="translateY(50px)";
+    busy=true;ind.classList.add("anim","spin");lab.classList.add("anim");ind.style.opacity="1";const v1=view();if(v1)v1.style.marginTop="50px";
     try{sessionStorage.setItem("nl.splash","1")}catch(e){}
     const t0=Date.now(),go=()=>{if(go.done)return;go.done=true;location.reload()};setTimeout(go,2000);
     try{await Promise.race([fetch(location.pathname,{cache:"reload"}),new Promise(r=>setTimeout(r,1800))])}catch(e){}
