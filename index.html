@@ -17,7 +17,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261118174007";window.NL_TRIAL_VER=V;
+(function(){var V="20261118175413";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -299,6 +299,42 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .jot-tools .chip{padding:7px 13px;font-size:13.5px}
 .jot-all{margin-left:auto;font-weight:700;font-size:14px;color:var(--accent);text-decoration:none}
 .jot-foot{margin-top:18px}
+/* Writing a note: clean page (thoughts, prayers) and guided sermon note */
+@media (max-width:959px){html.writing .tabs,html.writing .topbar{display:none!important}html.writing main{padding-top:calc(env(safe-area-inset-top,0px) + 4px)}}
+.jw-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:46px;margin-bottom:2px}
+.jw-bar .backlink{font-size:17px;font-weight:600}
+.jw-bar #jot-saved{font-size:12px;color:var(--muted);gap:5px}.jw-bar #jot-saved svg{width:12px;height:12px}
+.jw-done{justify-self:end;background:none;border:0;padding:8px 2px;font:700 17px var(--body,inherit);color:var(--accent);cursor:pointer}
+.jw-meta{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:2px 0 6px}
+.jw-kind{position:relative;display:inline-flex;align-items:center;height:26px;padding:0 24px 0 11px;border-radius:999px;background:var(--accent-soft,var(--soft));color:var(--accent);font-weight:700;font-size:13px}
+.jw-kind.jw-fixed{padding-right:11px}.jw-kind.jw-fixed::after{display:none}
+.jw-kind select{position:absolute;inset:0;opacity:0;font-size:16px;cursor:pointer}
+.jw-kind::after{content:"";position:absolute;right:10px;top:9px;width:5px;height:5px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.jw .jot-title{margin:4px 0 2px;font:700 32px/1.12 var(--display);letter-spacing:-.01em}
+.jw textarea.jw-grow{border-radius:0;box-shadow:none;display:block;width:100%;box-sizing:border-box;border:0;outline:none;resize:none;background:transparent;color:var(--ink);padding:4px 0;font:400 17px/1.55 var(--body,inherit);min-height:28px;overflow:hidden}
+.jw textarea.jw-grow::placeholder{color:var(--muted);opacity:.75}
+.jw-main{min-height:38vh}
+.jw-extra{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.jw-del{margin-top:26px;background:none;border:0;padding:0;font:600 14px var(--body,inherit);color:var(--warn,#B3261E);cursor:pointer}
+.jw-tools{position:fixed;left:0;right:0;bottom:var(--kb,0px);z-index:30;display:flex;align-items:center;justify-content:space-around;gap:4px;min-height:46px;
+  padding:0 max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px));background:var(--surface);border-top:1px solid var(--line);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+html.kbopen .jw-tools{padding-bottom:0}
+.jw-tools button{min-width:44px;height:44px;border:0;background:none;color:var(--accent);display:grid;place-items:center;cursor:pointer;font:700 14px var(--body,inherit);padding:0 6px;white-space:nowrap}
+.jw-tools button svg{width:22px;height:22px}
+.jw-tools .jw-kb{color:var(--muted)}
+@media (min-width:960px){.jw-tools{position:static;justify-content:flex-start;border:1px solid var(--line);border-radius:14px;margin-top:20px}}
+.jw-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none;margin:4px 0 14px}
+.jw-cover{width:54px;height:54px;flex:none;border-radius:12px;background:linear-gradient(135deg,#E9B949,#A9741A 55%,#3E2A0B);color:#FEF8E6;display:grid;place-items:center;text-align:center;font:700 12px/1 var(--display);text-transform:uppercase;padding:4px;box-sizing:border-box;overflow:hidden}
+.jw-card .t{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}.jw-card b{font-size:16px}.jw-card small{font-size:13px;color:var(--muted)}
+.jw-ref{flex:none;height:30px;padding:0 10px;border-radius:999px;border:1px solid var(--accent);color:var(--accent);font-weight:700;font-size:13px;display:flex;align-items:center}
+.jw-link{display:block;margin:4px 0 14px}.jw-link select{width:100%}
+.jw-sec{margin-top:18px}
+.jw input.jot-title,.jw textarea.jw-grow{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;outline:none!important}
+.jw input.jot-title{font:700 32px/1.12 var(--display)!important;padding:4px 0!important;min-height:0!important;height:auto!important}
+.jw textarea.jw-grow{padding:4px 0!important;font-size:17px!important}
+.jw-h{display:block;font:800 12px var(--body,inherit);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.jw .jw-sec.scr textarea.jw-grow{padding:6px 0 6px 14px!important;box-shadow:inset 3px 0 0 var(--accent)!important;font-style:italic}
+
 .jot-del{color:var(--warn,#B3261E)}
 .ics-done{display:flex;gap:8px;align-items:flex-start;margin:0}.ics-done svg{width:16px;height:16px;flex:none;margin-top:3px;color:var(--good)}
 .linkbtn{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--accent);text-decoration:underline;cursor:pointer}
@@ -692,6 +728,7 @@ pre.wa{white-space:pre-wrap;background:var(--surface);border-radius:14px;padding
 .lookbar button:focus-visible{outline:2px solid #FFB4D6;outline-offset:1px}
 .topbar{padding-top:44px!important}
 .lookbar .lb-screens{background:#FFB547;color:#1A1300}
+@media (max-width:959px){html.writing main{padding-top:calc(env(safe-area-inset-top,0px) + 50px)!important}}
 #trialnav{position:fixed;inset:0;z-index:450;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,10,20,.45)}
 #trialnav[hidden]{display:none}
 #trialnav .tn{width:100%;max-width:560px;max-height:86vh;overflow:auto;background:#12151C;color:#F2F2F6;border-radius:22px 22px 0 0;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;font-family:"Figtree",system-ui,sans-serif;box-shadow:0 -10px 40px -10px rgba(0,0,0,.6)}
@@ -811,7 +848,7 @@ pre.wa{white-space:pre-wrap;background:var(--surface);border-radius:14px;padding
   var nav=document.getElementById("trialnav"),box=nav.querySelector(".tn");
   var OUT=false;try{OUT=sessionStorage.getItem("trial.out")==="1"}catch(e){}
   var G=[
-    ["Member screens",[["Home","r:home"],["Calendar","r:calendar"],["My notes","r:mynotes"],["Writing a note","r:mynote-jdemo1"],["Notes in a sermon","r:notes-wwg-abraham"],["Events","r:events"],["News","r:news"],["More","r:more"],["Members","r:members"],["A member's profile","r:member-u_tolu"],["Give","r:give"],["Opportunities","r:opportunities"],["Series notes","r:notes"],["Prayer","r:prayer"],["About us","r:about"]]],
+    ["Member screens",[["Home","r:home"],["Calendar","r:calendar"],["My notes","r:mynotes"],["Writing a note","r:mynote-jdemo1"],["Writing sermon notes","r:mynote-s-talk-back"],["Notes in a sermon","r:notes-wwg-abraham"],["Events","r:events"],["News","r:news"],["More","r:more"],["Members","r:members"],["A member's profile","r:member-u_tolu"],["Give","r:give"],["Opportunities","r:opportunities"],["Series notes","r:notes"],["Prayer","r:prayer"],["About us","r:about"]]],
     ["Pop-ups members use",[["My profile","a:myprof"],["My birthday","a:bday"],["My interests","a:interests"],["Notifications","a:notifs"]]],
     ["Leader screens",[["Leader hub","l:leaders"],["People & roles","l:people"],["Birthdays","l:birthdays"],["Giving settings","l:give"],["Post something","la:post"]]],
     ["Before you're in",[["Opening animation","x:opening"],["Start the trial fresh","x:reset"],["Join screen (members)","x:join"],["Leader sign-in","x:leadsign"]]]
@@ -1666,7 +1703,7 @@ function listNext(line){const m=LIST_RE.exec(line);if(!m)return null;const [all,
   if(num)next=ind+(+num+1)+np+sp;else if(let_){const c=let_.charCodeAt(0),z=let_===let_.toUpperCase()?90:122;next=ind+(c<z?String.fromCharCode(c+1):let_)+lp+sp}
   else next=ind+(sym==="✓"||sym==="✗"?"☐":sym)+sp;
   return {empty,prefixLen:all.length,next}}
-document.addEventListener("keydown",e=>{const ta=e.target;if(e.key!=="Enter"||e.shiftKey||e.isComposing||!ta||(ta.id!=="jot-body"&&ta.id!=="mynote"))return;
+document.addEventListener("keydown",e=>{const ta=e.target;if(e.key!=="Enter"||e.shiftKey||e.isComposing||!ta||(ta.id!=="jot-body"&&ta.id!=="mynote"&&!(ta.classList&&ta.classList.contains("jw-s"))))return;
   const st=ta.selectionStart,en=ta.selectionEnd;if(st!==en)return;const v=ta.value,ls=v.lastIndexOf("\n",st-1)+1,line=v.slice(ls,st);const r=listNext(line);if(!r)return;
   e.preventDefault();
   if(r.empty){ta.setRangeText("",ls,st,"end")}else{ta.setRangeText("\n"+r.next,st,en,"end")}
@@ -1986,7 +2023,8 @@ function jotCard(e){const k=e.kind;const col=k==="sermon"?"var(--c-nl)":k==="pra
 const DAYS_LONG=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const JOT_FOLDERS=[["all","All notes"],["sermon","Sermon notes"],["thought","Thoughts"],["prayer","Prayers"],["answered","Answered prayers"]];
 const jotIn=(e,k)=>k==="all"||(k==="answered"?(e.kind==="prayer"&&e.answered):e.kind===k);
-function jotRow(e){const lines=String(e.body||"").split("\n").map(x=>x.trim()).filter(Boolean);const head=e.title||lines[0]||"New note";const rest=(e.title?lines:lines.slice(1)).join(" ");
+const JW_HEADS=["what stood out","scripture","this week i will","prayer"];
+function jotRow(e){const lines=String(e.body||"").split("\n").map(x=>x.trim()).filter(x=>x&&!JW_HEADS.includes(x.replace(/:$/,"").toLowerCase()));const head=e.title||lines[0]||"New note";const rest=(e.title?lines:lines.slice(1)).join(" ");
   const when=e.date?(()=>{const d=pd(e.date),t=today(),diff=Math.round((t-d)/864e5);return diff===0?"Today":diff===1?"Yesterday":diff>0&&diff<7?DAYS_LONG[d.getDay()]:d.getDate()+" "+MON[d.getMonth()]})():"";
   return `<a class="ios-r" href="#mynote-${esc(e.id)}" data-text="${esc(((e.title||"")+" "+(e.body||"")+" "+(e.series||"")).toLowerCase())}"><span class="ios-t"><b>${esc(head)}</b><span><em>${esc(when)}</em>${esc(rest||(e.kind==="prayer"&&e.answered?"Answered":"No additional text"))}</span></span></a>`}
 V.mynotes=()=>{
@@ -2026,22 +2064,48 @@ V.mynotes_old=()=>{
    <div class="row">${cur?`<button class="btn" data-act="jotnew" data-k="sermon" data-s="${esc(cur.id)}">Notes for ${esc(cur.title)}</button>`:""}<button class="btn ghost" data-act="jotnew" data-k="thought">Write a thought</button><button class="btn ghost" data-act="jotnew" data-k="prayer">Write a prayer</button></div></section>`}
   <button class="jot-fab" data-act="jotnew" data-k="${f==="all"?"":f}">${ic("plus",2.6)}New note</button>`;
 };
+const JW_SECS=[["stood","What stood out"],["scr","Scripture"],["todo","This week I will"],["pray","Prayer"]];
+function jwParse(body){const m={stood:[],scr:[],todo:[],pray:[]};let cur="stood";
+  String(body||"").split("\n").forEach(l=>{const h=l.trim().replace(/:$/,"").toLowerCase();const hit=JW_SECS.find(x=>x[1].toLowerCase()===h);if(hit){cur=hit[0];return}m[cur].push(l)});
+  const o={};Object.keys(m).forEach(k=>{o[k]=m[k].join("\n").replace(/^\n+|\s+$/g,"")});return o}
+const jwEmpty=t=>!String(t||"").replace(/[☐✓•\-\s]/g,"");
+function jwJoin(o){const parts=[];JW_SECS.forEach(([k,l])=>{const t=String(o[k]||"").replace(/\s+$/,"");if(jwEmpty(t))return;parts.push(k==="stood"&&!parts.length?t:l+"\n"+t)});return parts.join("\n\n")}
+const JW_IC={check:'<circle cx="5" cy="7" r="2"/><circle cx="5" cy="17" r="2"/><path d="M10 7h10M10 17h10"/>',dot:'<circle cx="5" cy="6" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="5" cy="18" r="1.2" fill="currentColor"/><path d="M10 6h10M10 12h10M10 18h10"/>',
+  scr:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M12 7v6M9 10h6"/>',pray:'<path d="M12 21V9l-3-6-1 7-3 4v4l3 2"/><path d="M12 21V9l3-6 1 7 3 4v4l-3 2"/>',
+  take:'<path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>',kb:'<rect x="3" y="5" width="18" height="11" rx="2"/><path d="M7 9h.01M11 9h.01M15 9h.01M8 13h8"/><path d="m9 19 3 2 3-2"/>'};
+const jwI=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${JW_IC[k]}</svg>`;
 V.mynote=()=>{
   const e=jotGet(S.jotId);
   const backTo=S.jotFolder?"#mynotes-"+S.jotFolder:"#mynotes",backLab=S.jotFolder?((JOT_FOLDERS.find(x=>x[0]===S.jotFolder)||["","Notes"])[1]):"Notes";
   if(!e)return `<a class="backlink" href="${backTo}">${ic("chev",2)}${backLab}</a><p class="empty">This note isn't here any more.</p>`;
+  if(S.jwFor!==e.id){S.jwFor=e.id;S.jwOpen={}}
   const sessN=e.sess?S.col.notes.find(x=>x.id===e.sess):null;
   const sessions=S.col.notes.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,30);
-  return `<div class="jot-top"><a class="backlink" href="${backTo}">${ic("chev",2)}${backLab}</a><span class="hint" id="jot-saved">${ic("lock",2)} Only you</span></div>
-  ${e.virtual?`<span class="jot-k" style="color:var(--c-nl)">${esc(jotLabel(e).toUpperCase())}</span><h1 class="jot-title-ro">${esc(e.title)}</h1>`
-   :`<div class="chips" role="group" aria-label="Type of note">${JOT_KINDS.map(([k,l])=>`<button class="chip" data-act="jotkind" data-k="${k}" aria-pressed="${e.kind===k}">${l}</button>`).join("")}</div>
-     <input id="jot-title" class="jot-title" value="${esc(e.title||"")}" placeholder="Title" aria-label="Title" maxlength="120" autocomplete="off">`}
-  ${e.kind==="sermon"&&!e.virtual?`<label class="f jot-sess" for="jot-sess">Message<select id="jot-sess"><option value="">Not linked</option>${sessions.map(n=>`<option value="${esc(n.id)}" ${n.id===e.sess?"selected":""}>${esc(n.title)}${n.date?" · "+pd(n.date).getDate()+" "+MON[pd(n.date).getMonth()]:""}</option>`).join("")}</select></label>`:""}
-  ${sessN?`<a class="jot-link" href="#notes-${esc(sessN.id)}">${ic("notes",2)}Open the fill-in notes for ${esc(sessN.title)}</a>`:""}
-  <textarea id="jot-body" class="jot-body" placeholder="${e.kind==="prayer"?"Talk to God…":e.kind==="sermon"?"What stood out to you?":"Write anything…"}" aria-label="Note">${esc(e.body||"")}</textarea>
-  <div class="jot-tools">${JOT_INS.map(([k,l])=>`<button class="chip" data-act="jotins" data-k="${k}">${l}</button>`).join("")}</div>
-  ${e.kind==="prayer"&&!e.virtual?`<div class="row"><button class="btn ghost small" data-act="jotans" aria-pressed="${!!e.answered}">${e.answered?"✓ Answered":"Mark as answered"}</button><button class="btn ghost small" data-act="jotshare">Send to the prayer team</button></div>`:""}
-  <div class="row jot-foot"><button class="btn ghost small jot-del" data-act="jotdel">${e.virtual?"Clear these notes":"Delete note"}</button></div>`;
+  const d=e.date?pd(e.date):null,tm=e.at>1e6?new Date(e.at):null;
+  const when=[d?DAYS[d.getDay()]+" "+d.getDate()+" "+MON[d.getMonth()]:"",tm?String(tm.getHours()).padStart(2,"0")+":"+String(tm.getMinutes()).padStart(2,"0"):""].filter(Boolean).join(" · ");
+  const kindTag=e.virtual?`<span class="jw-kind jw-fixed">Sermon</span>`:`<label class="jw-kind">${(JOT_KINDS.find(x=>x[0]===e.kind)||["","Note"])[1]}<select id="jot-kindsel" aria-label="Type of note">${JOT_KINDS.map(([k,l])=>`<option value="${k}" ${e.kind===k?"selected":""}>${l}</option>`).join("")}</select></label>`;
+  const bar=`<div class="jw-bar"><a class="backlink" href="${backTo}">${ic("chev",2)}${backLab}</a><span class="hint" id="jot-saved">${ic("lock",2)} Only you</span><button class="jw-done" data-act="jwdone" data-to="${backTo}">Done</button></div>
+  <div class="jw-meta">${esc(when)}${kindTag}</div>`;
+  const title=e.virtual?`<h1 class="jot-title jot-title-ro">${esc(e.title)}</h1>`:`<input id="jot-title" class="jot-title" value="${esc(e.title||"")}" placeholder="Title" aria-label="Title" maxlength="120" autocomplete="off">`;
+  const del=`<button class="jw-del" data-act="jotdel">${e.virtual?"Clear these notes":"Delete note"}</button>`;
+  if(e.kind==="sermon"){
+    const p=jwParse(e.body),shown=k=>k==="stood"||!jwEmpty(p[k])||S.jwOpen[k];
+    const card=sessN?`<a class="jw-card" href="#notes-${esc(sessN.id)}"><span class="jw-cover">${esc(String(sessN.title||"").split(/\s+/).slice(0,3).join(" "))}</span><span class="t"><b>${esc(sessN.title)}</b><small>${esc([sessN.series&&sessN.series!=="Sermons"?sessN.series:"",sessN.date?DAYS[pd(sessN.date).getDay()]+" "+pd(sessN.date).getDate()+" "+MON[pd(sessN.date).getMonth()]:""].filter(Boolean).join(" · ")||"Open the sermon")}</small></span>${sessN.scripture?`<span class="jw-ref">${esc(sessN.scripture)}</span>`:""}</a>`
+      :(!e.virtual?`<label class="jw-link f" for="jot-sess">Which message?<select id="jot-sess"><option value="">Not linked</option>${sessions.map(n=>`<option value="${esc(n.id)}">${esc(n.title)}${n.date?" · "+pd(n.date).getDate()+" "+MON[pd(n.date).getMonth()]:""}</option>`).join("")}</select></label>`:"");
+    const ph={stood:"What stood out to you?",scr:sessN&&sessN.scripture?sessN.scripture+": write the verse, or what it says to you":"Write the verse, or what it says to you",todo:"☐ One thing I'll do",pray:"Tap to write a prayer…"};
+    const secs=JW_SECS.filter(([k])=>shown(k)).map(([k,l])=>`<div class="jw-sec ${k}"><span class="jw-h">${l}</span><textarea class="jw-grow jw-s" data-sec="${k}" rows="1" placeholder="${esc(ph[k])}" aria-label="${l}">${esc(p[k])}</textarea></div>`).join("");
+    const adds=JW_SECS.filter(([k])=>!shown(k)).map(([k,l])=>`<button data-act="jwsec" data-k="${k}">+ ${k==="todo"?"To do":l}</button>`).join("");
+    return `<div class="jw">${bar}${card}${title}${secs}${del}
+    <div class="jw-tools" role="toolbar" aria-label="Add to note">${adds}<button data-act="jwins" data-k="check" aria-label="Checklist">${jwI("check")}</button><button class="jw-kb" data-act="jwkb" aria-label="Hide keyboard">${jwI("kb")}</button></div></div>`;
+  }
+  return `<div class="jw">${bar}${title}
+  <textarea id="jot-body" class="jw-grow jw-main" rows="6" placeholder="${e.kind==="prayer"?"Talk to God…":"Write anything…"}" aria-label="Note">${esc(e.body||"")}</textarea>
+  ${e.kind==="prayer"?`<div class="jw-extra"><button class="btn ghost small" data-act="jotans" aria-pressed="${!!e.answered}">${e.answered?"✓ Answered":"Mark as answered"}</button><button class="btn ghost small" data-act="jotshare">Send to the prayer team</button></div>`:""}
+  ${del}
+  <div class="jw-tools" role="toolbar" aria-label="Add to note">
+   <button data-act="jwins" data-k="check" aria-label="Checklist">${jwI("check")}</button><button data-act="jwins" data-k="dot" aria-label="Bullet list">${jwI("dot")}</button>
+   <button data-act="jwins" data-k="scr" aria-label="Scripture">${jwI("scr")}</button><button data-act="jwins" data-k="pray" aria-label="Prayer">${jwI("pray")}</button><button data-act="jwins" data-k="take" aria-label="Takeaway">${jwI("take")}</button>
+   <button class="jw-kb" data-act="jwkb" aria-label="Hide keyboard">${jwI("kb")}</button></div></div>`;
 };
 V.opportunities=()=>{
   const mineI=S.uid?(mySelf("interest").opps||{}):{};const teams=S.mine.teams||[];
@@ -2421,12 +2485,12 @@ function setHTML(el,html){if(!el||el.__h===html)return false;el.innerHTML=html;e
 function doRender(force){
   const ae=document.activeElement;
   if(!force&&ae&&ae.closest&&ae.closest("#view")&&(ae.tagName==="TEXTAREA"||ae.tagName==="INPUT")){pendingRender=true;renderNav();refreshDetail();return}
-  pendingRender=false;renderNav();refreshDetail();updateBell();
+  pendingRender=false;renderNav();refreshDetail();updateBell();document.documentElement.classList.toggle("writing",S.route==="mynote");
   const v=$("#view");
   if(!S.ready){if(S.offline)setHTML(v,`<div class="hero"><span class="k">Welcome</span><h2>Sign in to see Next Level</h2><span class="meta">The calendar, news and notes load live once you're signed in to claude.ai with access to this page.</span></div>`+V.about());return}
   const fn=V[S.route]||V.home;
   const changed=setHTML(v,(S.timedOut&&!S.loaded.size?`<div class="banner">Still connecting. What you see may be out of date.</div>`:"")+(S.canWrite===false?`<div class="banner">Your account can read but not post. Ask a leader if that looks wrong.</div>`:"")+fn());
-  if(changed){fillNames(v);checkClamps(v)}
+  if(changed){fillNames(v);checkClamps(v);if(S.route==="mynote")jwGrow()}
   if(S.deepEvent){const e=S.col.events.find(x=>x.id===S.deepEvent);if(e){S.deepEvent=null;setTimeout(()=>openDetail("e:"+e.id,e.date),50)}}
   if(S.route==="home"&&S.me&&S.me.name){const h=$("#hello-name");if(h)h.textContent=", "+S.me.name.split(" ")[0]}
   renderSide();autoBirthdays();
@@ -2467,6 +2531,12 @@ document.addEventListener("click",async e=>{
     const i=S.col.settings.findIndex(x=>x.id==="giving");const row=Object.assign({id:"giving"},body);if(i>=0)S.col.settings[i]=row;else S.col.settings.push(row);setDoc("settings/giving",body).then(()=>toast(body.open?"Saved. Members can see giving details":"Saved. Hidden from members for now"));render();return}
   if(a==="jotf"){S.jotF=d.k;render(true);return}
   if(a==="jotnew"){if(!S.uid)return;const id=jotNew(d.k||(S.jotF!=="all"?S.jotF:"thought"),d.s||"");location.hash="mynote-"+id;setTimeout(()=>{const t=$("#jot-title")&&!d.s?$("#jot-title"):$("#jot-body");if(t)t.focus()},120);return}
+  if(a==="jwdone"){const ae=document.activeElement;if(ae&&/^(TEXTAREA|INPUT)$/.test(ae.tagName)&&ae.closest(".jw")){ae.blur();return}location.hash=d.to.slice(1);return}
+  if(a==="jwkb"){const ae=document.activeElement;if(ae&&ae.blur)ae.blur();return}
+  if(a==="jwsec"){S.jwOpen[d.k]=true;render(true);{const t=document.querySelector('.jw-s[data-sec="'+d.k+'"]');if(!t)return;if(d.k==="todo"&&!t.value){t.value="☐ ";t.dispatchEvent(new Event("input",{bubbles:true}))}t.focus();try{t.setSelectionRange(t.value.length,t.value.length)}catch(err){}jwGrow()}return}
+  if(a==="jwins"){let ta=S.jwLast&&S.jwLast.isConnected?S.jwLast:($("#jot-body")||document.querySelector(".jw-s"));if(!ta)return;const ins={check:"☐ ",dot:"• ",scr:"Scripture: ",pray:"Prayer: ",take:"Takeaway: "}[d.k]||"";
+    const p=ta.selectionStart!=null&&document.activeElement===ta?ta.selectionStart:ta.value.length;const before=ta.value.slice(0,p),pre=before&&!before.endsWith("\n")?"\n":"";
+    ta.value=before+pre+ins+ta.value.slice(p);const c=p+pre.length+ins.length;ta.focus();try{ta.setSelectionRange(c,c)}catch(err){}ta.dispatchEvent(new Event("input",{bubbles:true}));return}
   if(a==="jotkind"){const e=(S.mine.book||{})[S.jotId];if(!e)return;e.kind=d.k;e.upd=Date.now();saveMine();render(true);return}
   if(a==="jotans"){const e=(S.mine.book||{})[S.jotId];if(!e)return;e.answered=!e.answered;e.upd=Date.now();saveMine();render(true);return}
   if(a==="jotins"){const ta=$("#jot-body")||$("#mynote");if(!ta)return;const ins=JOT_TXT[d.k]||"";const p=ta.selectionStart!=null&&document.activeElement===ta?ta.selectionStart:ta.value.length;
@@ -2533,11 +2603,25 @@ document.addEventListener("submit",async e=>{if(e.target.id!=="pp-add")return;e.
   try{const code=await window.NL_ADMIN.invite(em,nm,rl);$("#pp-email").value="";$("#pp-name").value="";$("#pp-email").blur();$("#pp-name").blur();loadPeople();
     showCodeSheet("Setup code for "+(nm||em),"Send this to them. It works once, and it's their only way to create their login.",code,setupMessage(nm,code))}
   catch(err){toast(err&&err.code==="exists"?"That email already has an account.":"Couldn't add them. Try again.")}});
+document.addEventListener("change",e=>{const id=e.target.id;
+  if(id==="jot-kindsel"){const b=(S.mine.book||{})[S.jotId];if(!b)return;b.kind=e.target.value;b.upd=Date.now();saveMine();render(true);return}});
+function jwGrow(t){(t?[t]:document.querySelectorAll(".jw-grow")).forEach(x=>{x.style.height="auto";x.style.height=Math.max(x.scrollHeight,x.classList.contains("jw-main")?Math.round(innerHeight*.38):28)+"px"})}
+document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("jw-grow"))S.jwLast=e.target});
+document.addEventListener("pointerdown",e=>{if(e.target.closest(".jw-tools button"))e.preventDefault()});
+/* Tap the box at the start of a checklist line to tick it */
+document.addEventListener("click",e=>{const ta=e.target;if(!ta.classList||!ta.classList.contains("jw-grow")||ta.selectionStart!==ta.selectionEnd)return;const v=ta.value,p=ta.selectionStart,ls=v.lastIndexOf("\n",p-1)+1;
+  if(p-ls>2)return;const ch=v[ls];if(ch!=="☐"&&ch!=="✓")return;const nv=v.slice(0,ls)+(ch==="☐"?"✓":"☐")+v.slice(ls+1);ta.value=nv;try{ta.setSelectionRange(p,p)}catch(err){}ta.dispatchEvent(new Event("input",{bubbles:true}))});
+/* Keep the note toolbar sitting on top of the keyboard */
+(function(){const vv=window.visualViewport;if(!vv)return;const up=()=>{const kb=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));document.documentElement.style.setProperty("--kb",kb+"px");document.documentElement.classList.toggle("kbopen",kb>60)};vv.addEventListener("resize",up);vv.addEventListener("scroll",up)})();
 document.addEventListener("input",e=>{const id=e.target.id;
   if(id==="ser-q"||(id==="jot-q"&&$("#jot-results"))){const p=id==="ser-q"?"ser":"jot",q=e.target.value.trim().toLowerCase(),b=$("#"+p+"-browse"),r=$("#"+p+"-results");let shown=0;
     if(b)b.hidden=!!q;if(r){r.hidden=!q;r.querySelectorAll(".ios-r").forEach(c=>{const ok=!q||c.dataset.text.includes(q);c.hidden=!ok;if(ok)shown++});const n=$("#"+p+"-none");if(n)n.hidden=!q||shown>0}return}
   if(id==="jot-q"){const q=e.target.value.trim().toLowerCase();let shown=0;document.querySelectorAll("#view .jot").forEach(c=>{const ok=!q||c.dataset.text.includes(q);c.hidden=!ok;if(ok)shown++});
     document.querySelectorAll("#view .jot-st").forEach(h=>{const l=h.nextElementSibling;h.hidden=!!l&&![...l.children].some(c=>!c.hidden)});const n=$("#jot-none");if(n)n.hidden=shown>0;return}
+  if(e.target.classList&&e.target.classList.contains("jw-grow"))jwGrow(e.target);
+  if(e.target.classList&&e.target.classList.contains("jw-s")){const e2=jotGet(S.jotId);if(!e2)return;const o=jwParse(e2.body);document.querySelectorAll(".jw-s").forEach(t=>{o[t.dataset.sec]=t.value});const v=jwJoin(o).slice(0,20000);
+    if(e2.virtual){S.mine.notes=S.mine.notes||{};S.mine.notes[e2.sess]=v}else{const b=S.mine.book[e2.id];b.body=v;b.upd=Date.now()}
+    saveMine();const sv=$("#jot-saved");if(sv){sv.textContent="Saving…";clearTimeout(window.__jotT);window.__jotT=setTimeout(()=>{if(sv.isConnected)sv.innerHTML=ic("lock",2)+" Saved · only you"},900)}return}
   if(id==="jot-body"||id==="jot-title"){const e2=jotGet(S.jotId);if(!e2)return;
     if(e2.virtual){S.mine.notes[e2.sess]=e.target.value.slice(0,20000)}else{const b=S.mine.book[e2.id];if(id==="jot-body")b.body=e.target.value.slice(0,20000);else b.title=e.target.value.slice(0,120);b.upd=Date.now()}
     saveMine();const sv=$("#jot-saved");if(sv){sv.textContent="Saving…";clearTimeout(window.__jotT);window.__jotT=setTimeout(()=>{if(sv.isConnected)sv.innerHTML=ic("lock",2)+" Saved · only you"},900)}return}
