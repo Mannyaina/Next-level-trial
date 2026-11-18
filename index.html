@@ -17,7 +17,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261118175413";window.NL_TRIAL_VER=V;
+(function(){var V="20261118180212";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -312,6 +312,7 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .jw-kind::after{content:"";position:absolute;right:10px;top:9px;width:5px;height:5px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .jw .jot-title{margin:4px 0 2px;font:700 32px/1.12 var(--display);letter-spacing:-.01em}
 .jw textarea.jw-grow{border-radius:0;box-shadow:none;display:block;width:100%;box-sizing:border-box;border:0;outline:none;resize:none;background:transparent;color:var(--ink);padding:4px 0;font:400 17px/1.55 var(--body,inherit);min-height:28px;overflow:hidden}
+.jw input.jot-title,.jw textarea.jw-grow{caret-color:var(--accent)}
 .jw textarea.jw-grow::placeholder{color:var(--muted);opacity:.75}
 .jw-main{min-height:38vh}
 .jw-extra{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
@@ -321,7 +322,14 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 html.kbopen .jw-tools{padding-bottom:0}
 .jw-tools button{min-width:44px;height:44px;border:0;background:none;color:var(--accent);display:grid;place-items:center;cursor:pointer;font:700 14px var(--body,inherit);padding:0 6px;white-space:nowrap}
 .jw-tools button svg{width:22px;height:22px}
-.jw-tools .jw-kb{color:var(--muted)}
+.jw-tools .jw-kb{color:var(--muted);flex:none}
+.jw-tools{justify-content:flex-start;gap:0;padding-right:max(4px,env(safe-area-inset-right,0px))}
+.jw-chips{flex:1;min-width:0;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:7px 4px 7px 2px;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+.jw-chips::-webkit-scrollbar{display:none}
+.jw-tools .jw-chips button{flex:none;height:34px;min-width:0;padding:0 12px 0 10px;border-radius:999px;background:var(--accent-soft,var(--soft));color:var(--accent);display:flex;align-items:center;gap:6px;font:700 14px var(--body,inherit)}
+.jw-tools .jw-chips button svg{width:16px;height:16px}
+@media (max-width:959px){html:not(.kbopen) .jw-tools{transform:translateY(110%);pointer-events:none}}
+.jw-tools{transition:transform .18s ease}
 @media (min-width:960px){.jw-tools{position:static;justify-content:flex-start;border:1px solid var(--line);border-radius:14px;margin-top:20px}}
 .jw-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none;margin:4px 0 14px}
 .jw-cover{width:54px;height:54px;flex:none;border-radius:12px;background:linear-gradient(135deg,#E9B949,#A9741A 55%,#3E2A0B);color:#FEF8E6;display:grid;place-items:center;text-align:center;font:700 12px/1 var(--display);text-transform:uppercase;padding:4px;box-sizing:border-box;overflow:hidden}
@@ -369,7 +377,12 @@ input.af-new,textarea.af-new{box-shadow:0 0 0 2px #E7C27D;background-color:rgba(
 .ios-h{display:block;font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);margin:22px 4px 7px}
 .ios-g{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .ios-r{display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:52px;box-sizing:border-box;color:var(--ink);text-decoration:none;background:none;border:0;width:100%;font:inherit;text-align:left}
-.ios-r+.ios-r{border-top:1px solid var(--line)}
+.ios-r+.ios-r,.sw+.sw{border-top:1px solid var(--line)}
+.sw{position:relative;overflow:hidden;background:#E5484D}
+.sw>.ios-r{position:relative;z-index:1;background:var(--surface);transition:transform .22s ease;touch-action:pan-y}
+.sw.drag>.ios-r{transition:none}
+.sw-del{position:absolute;right:0;top:0;bottom:0;width:92px;border:0;background:#E5484D;color:#fff;font:700 15px var(--body,inherit);cursor:pointer}
+#toast .undo{margin-left:12px;background:none;border:0;color:inherit;font:800 15px var(--body,inherit);text-decoration:underline;cursor:pointer;pointer-events:auto}
 .ios-r .ios-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.ios-r .ios-t b{font-size:17px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ios-r .ios-t span{font-size:14.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ios-r .ios-t span em{font-style:normal;color:var(--ink);margin-right:8px}
 .ios-r .ios-lab{flex:1;font-size:17px}.ios-r .ios-n{font-size:17px;color:var(--muted)}
@@ -2026,7 +2039,7 @@ const jotIn=(e,k)=>k==="all"||(k==="answered"?(e.kind==="prayer"&&e.answered):e.
 const JW_HEADS=["what stood out","scripture","this week i will","prayer"];
 function jotRow(e){const lines=String(e.body||"").split("\n").map(x=>x.trim()).filter(x=>x&&!JW_HEADS.includes(x.replace(/:$/,"").toLowerCase()));const head=e.title||lines[0]||"New note";const rest=(e.title?lines:lines.slice(1)).join(" ");
   const when=e.date?(()=>{const d=pd(e.date),t=today(),diff=Math.round((t-d)/864e5);return diff===0?"Today":diff===1?"Yesterday":diff>0&&diff<7?DAYS_LONG[d.getDay()]:d.getDate()+" "+MON[d.getMonth()]})():"";
-  return `<a class="ios-r" href="#mynote-${esc(e.id)}" data-text="${esc(((e.title||"")+" "+(e.body||"")+" "+(e.series||"")).toLowerCase())}"><span class="ios-t"><b>${esc(head)}</b><span><em>${esc(when)}</em>${esc(rest||(e.kind==="prayer"&&e.answered?"Answered":"No additional text"))}</span></span></a>`}
+  return `<div class="sw"><button class="sw-del" data-act="jotswdel" data-id="${esc(e.id)}" tabindex="-1">${e.virtual?"Clear":"Delete"}</button><a class="ios-r" href="#mynote-${esc(e.id)}" data-text="${esc(((e.title||"")+" "+(e.body||"")+" "+(e.series||"")).toLowerCase())}"><span class="ios-t"><b>${esc(head)}</b><span><em>${esc(when)}</em>${esc(rest||(e.kind==="prayer"&&e.answered?"Answered":"No additional text"))}</span></span></a></div>`}
 V.mynotes=()=>{
   if(!S.uid)return `<div class="ph"><h1>Notes</h1></div><p class="empty">Sign in to keep private notes.</p>`;
   const all=jotAll();
@@ -2087,7 +2100,7 @@ V.mynote=()=>{
   const bar=`<div class="jw-bar"><a class="backlink" href="${backTo}">${ic("chev",2)}${backLab}</a><span class="hint" id="jot-saved">${ic("lock",2)} Only you</span><button class="jw-done" data-act="jwdone" data-to="${backTo}">Done</button></div>
   <div class="jw-meta">${esc(when)}${kindTag}</div>`;
   const title=e.virtual?`<h1 class="jot-title jot-title-ro">${esc(e.title)}</h1>`:`<input id="jot-title" class="jot-title" value="${esc(e.title||"")}" placeholder="Title" aria-label="Title" maxlength="120" autocomplete="off">`;
-  const del=`<button class="jw-del" data-act="jotdel">${e.virtual?"Clear these notes":"Delete note"}</button>`;
+  const del="";
   if(e.kind==="sermon"){
     const p=jwParse(e.body),shown=k=>k==="stood"||!jwEmpty(p[k])||S.jwOpen[k];
     const card=sessN?`<a class="jw-card" href="#notes-${esc(sessN.id)}"><span class="jw-cover">${esc(String(sessN.title||"").split(/\s+/).slice(0,3).join(" "))}</span><span class="t"><b>${esc(sessN.title)}</b><small>${esc([sessN.series&&sessN.series!=="Sermons"?sessN.series:"",sessN.date?DAYS[pd(sessN.date).getDay()]+" "+pd(sessN.date).getDate()+" "+MON[pd(sessN.date).getMonth()]:""].filter(Boolean).join(" · ")||"Open the sermon")}</small></span>${sessN.scripture?`<span class="jw-ref">${esc(sessN.scripture)}</span>`:""}</a>`
@@ -2096,15 +2109,14 @@ V.mynote=()=>{
     const secs=JW_SECS.filter(([k])=>shown(k)).map(([k,l])=>`<div class="jw-sec ${k}"><span class="jw-h">${l}</span><textarea class="jw-grow jw-s" data-sec="${k}" rows="1" placeholder="${esc(ph[k])}" aria-label="${l}">${esc(p[k])}</textarea></div>`).join("");
     const adds=JW_SECS.filter(([k])=>!shown(k)).map(([k,l])=>`<button data-act="jwsec" data-k="${k}">+ ${k==="todo"?"To do":l}</button>`).join("");
     return `<div class="jw">${bar}${card}${title}${secs}${del}
-    <div class="jw-tools" role="toolbar" aria-label="Add to note">${adds}<button data-act="jwins" data-k="check" aria-label="Checklist">${jwI("check")}</button><button class="jw-kb" data-act="jwkb" aria-label="Hide keyboard">${jwI("kb")}</button></div></div>`;
+    <div class="jw-tools" role="toolbar" aria-label="Add to note"><div class="jw-chips">${adds}<button data-act="jwins" data-k="check">${jwI("check")}Checklist</button><button data-act="jwins" data-k="dot">${jwI("dot")}Bullets</button></div><button class="jw-kb" data-act="jwkb" aria-label="Hide keyboard">${jwI("kb")}</button></div></div>`;
   }
   return `<div class="jw">${bar}${title}
   <textarea id="jot-body" class="jw-grow jw-main" rows="6" placeholder="${e.kind==="prayer"?"Talk to God…":"Write anything…"}" aria-label="Note">${esc(e.body||"")}</textarea>
   ${e.kind==="prayer"?`<div class="jw-extra"><button class="btn ghost small" data-act="jotans" aria-pressed="${!!e.answered}">${e.answered?"✓ Answered":"Mark as answered"}</button><button class="btn ghost small" data-act="jotshare">Send to the prayer team</button></div>`:""}
   ${del}
   <div class="jw-tools" role="toolbar" aria-label="Add to note">
-   <button data-act="jwins" data-k="check" aria-label="Checklist">${jwI("check")}</button><button data-act="jwins" data-k="dot" aria-label="Bullet list">${jwI("dot")}</button>
-   <button data-act="jwins" data-k="scr" aria-label="Scripture">${jwI("scr")}</button><button data-act="jwins" data-k="pray" aria-label="Prayer">${jwI("pray")}</button><button data-act="jwins" data-k="take" aria-label="Takeaway">${jwI("take")}</button>
+   <div class="jw-chips"><button data-act="jwins" data-k="check">${jwI("check")}Checklist</button><button data-act="jwins" data-k="dot">${jwI("dot")}Bullets</button><button data-act="jwins" data-k="scr">${jwI("scr")}Scripture</button><button data-act="jwins" data-k="pray">${jwI("pray")}Prayer</button><button data-act="jwins" data-k="take">${jwI("take")}Takeaway</button></div>
    <button class="jw-kb" data-act="jwkb" aria-label="Hide keyboard">${jwI("kb")}</button></div></div>`;
 };
 V.opportunities=()=>{
@@ -2530,7 +2542,11 @@ document.addEventListener("click",async e=>{
     const body={open:document.getElementById("gv-open").checked,name:g("gv-name").slice(0,80),sort:sort?sort.replace(/(\d\d)(\d\d)(\d\d)/,"$1-$2-$3"):"",acct,ref:g("gv-ref").slice(0,18),link:link.slice(0,300),note:g("gv-note").slice(0,400),updatedAt:Date.now()};
     const i=S.col.settings.findIndex(x=>x.id==="giving");const row=Object.assign({id:"giving"},body);if(i>=0)S.col.settings[i]=row;else S.col.settings.push(row);setDoc("settings/giving",body).then(()=>toast(body.open?"Saved. Members can see giving details":"Saved. Hidden from members for now"));render();return}
   if(a==="jotf"){S.jotF=d.k;render(true);return}
-  if(a==="jotnew"){if(!S.uid)return;const id=jotNew(d.k||(S.jotF!=="all"?S.jotF:"thought"),d.s||"");location.hash="mynote-"+id;setTimeout(()=>{const t=$("#jot-title")&&!d.s?$("#jot-title"):$("#jot-body");if(t)t.focus()},120);return}
+  if(a==="jotnew"){if(!S.uid)return;const id=jotNew(d.k||(S.jotF!=="all"?S.jotF:"thought"),d.s||"");history.pushState(null,"","#mynote-"+id);readRoute();render(true);toTop();jwFocus();return}
+  if(a==="jotswdel"){const e2=jotGet(d.id);if(!e2)return;const was=e2.virtual?{v:1,sess:e2.sess,txt:S.mine.notes[e2.sess]}:{v:0,e:S.mine.book[e2.id]};
+    if(e2.virtual)delete S.mine.notes[e2.sess];else delete S.mine.book[e2.id];saveMine(true);render(true);
+    const t=$("#toast");t.innerHTML="";t.append(e2.virtual?"Notes cleared":"Note deleted");const u=document.createElement("button");u.className="undo";u.textContent="Undo";
+    u.onclick=()=>{if(was.v)S.mine.notes[was.sess]=was.txt;else S.mine.book[was.e.id]=was.e;saveMine(true);render(true);t.classList.remove("show")};t.append(u);t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),5000);return}
   if(a==="jwdone"){const ae=document.activeElement;if(ae&&/^(TEXTAREA|INPUT)$/.test(ae.tagName)&&ae.closest(".jw")){ae.blur();return}location.hash=d.to.slice(1);return}
   if(a==="jwkb"){const ae=document.activeElement;if(ae&&ae.blur)ae.blur();return}
   if(a==="jwsec"){S.jwOpen[d.k]=true;render(true);{const t=document.querySelector('.jw-s[data-sec="'+d.k+'"]');if(!t)return;if(d.k==="todo"&&!t.value){t.value="☐ ";t.dispatchEvent(new Event("input",{bubbles:true}))}t.focus();try{t.setSelectionRange(t.value.length,t.value.length)}catch(err){}jwGrow()}return}
@@ -2611,11 +2627,27 @@ document.addEventListener("pointerdown",e=>{if(e.target.closest(".jw-tools butto
 /* Tap the box at the start of a checklist line to tick it */
 document.addEventListener("click",e=>{const ta=e.target;if(!ta.classList||!ta.classList.contains("jw-grow")||ta.selectionStart!==ta.selectionEnd)return;const v=ta.value,p=ta.selectionStart,ls=v.lastIndexOf("\n",p-1)+1;
   if(p-ls>2)return;const ch=v[ls];if(ch!=="☐"&&ch!=="✓")return;const nv=v.slice(0,ls)+(ch==="☐"?"✓":"☐")+v.slice(ls+1);ta.value=nv;try{ta.setSelectionRange(p,p)}catch(err){}ta.dispatchEvent(new Event("input",{bubbles:true}))});
+/* Swipe a note to the left to delete it (like iPhone Notes); tap the red button or swipe all the way */
+(function(){let sw=null,x0=0,y0=0,dx=0,base=0,mode="";const W=92;
+  const close=except=>document.querySelectorAll(".sw.open").forEach(o=>{if(o!==except){o.classList.remove("open");o.firstElementChild.nextElementSibling.style.transform=""}});
+  document.addEventListener("touchstart",e=>{const s=e.target.closest(".sw");if(!s||e.target.closest(".sw-del")){if(!s)close();return}close(s);sw=s;x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;mode="";base=s.classList.contains("open")?-W:0},{passive:true});
+  document.addEventListener("touchmove",e=>{if(!sw)return;const mx=e.touches[0].clientX-x0,my=e.touches[0].clientY-y0;
+    if(!mode){if(Math.abs(mx)<8&&Math.abs(my)<8)return;mode=Math.abs(mx)>Math.abs(my)?"x":"y";if(mode==="x")sw.classList.add("drag")}
+    if(mode!=="x")return;e.preventDefault();dx=Math.min(0,base+mx);sw.querySelector(".ios-r").style.transform=`translateX(${dx<-W?-W+(dx+W)*.6:dx}px)`},{passive:false});
+  document.addEventListener("touchend",()=>{if(!sw)return;const s=sw,r=s.querySelector(".ios-r");sw=null;s.classList.remove("drag");if(mode!=="x")return;
+    if(dx<-s.offsetWidth*.6){r.style.transform="translateX(-100%)";setTimeout(()=>s.querySelector(".sw-del").click(),160);return}
+    if(dx<-W/2){s.classList.add("open");r.style.transform=`translateX(${-W}px)`}else{s.classList.remove("open");r.style.transform=""}});
+  document.addEventListener("click",e=>{const s=e.target.closest(".sw");if(s&&s.classList.contains("open")&&!e.target.closest(".sw-del")){e.preventDefault();e.stopPropagation();close()}},true);
+})();
+/* Open a note with the cursor already in place (iPhone only shows the keyboard when this happens inside the tap) */
+function jwFocus(){const t=$("#jot-title"),body=$("#jot-body")||document.querySelector(".jw-s");const el=t&&!t.value.trim()?t:(body||t);if(!el)return;el.focus();try{const n=el.value.length;el.setSelectionRange(n,n)}catch(err){}}
+document.addEventListener("click",e=>{const a=e.target.closest('a.ios-r[href^="#mynote-"]');if(!a||e.defaultPrevented||e.metaKey||e.ctrlKey)return;e.preventDefault();
+  history.pushState(null,"",a.getAttribute("href"));readRoute();render(true);toTop();jwFocus()});
 /* Keep the note toolbar sitting on top of the keyboard */
 (function(){const vv=window.visualViewport;if(!vv)return;const up=()=>{const kb=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));document.documentElement.style.setProperty("--kb",kb+"px");document.documentElement.classList.toggle("kbopen",kb>60)};vv.addEventListener("resize",up);vv.addEventListener("scroll",up)})();
 document.addEventListener("input",e=>{const id=e.target.id;
   if(id==="ser-q"||(id==="jot-q"&&$("#jot-results"))){const p=id==="ser-q"?"ser":"jot",q=e.target.value.trim().toLowerCase(),b=$("#"+p+"-browse"),r=$("#"+p+"-results");let shown=0;
-    if(b)b.hidden=!!q;if(r){r.hidden=!q;r.querySelectorAll(".ios-r").forEach(c=>{const ok=!q||c.dataset.text.includes(q);c.hidden=!ok;if(ok)shown++});const n=$("#"+p+"-none");if(n)n.hidden=!q||shown>0}return}
+    if(b)b.hidden=!!q;if(r){r.hidden=!q;r.querySelectorAll(".ios-r").forEach(c=>{const ok=!q||c.dataset.text.includes(q);(c.parentNode.classList.contains("sw")?c.parentNode:c).hidden=!ok;if(ok)shown++});const n=$("#"+p+"-none");if(n)n.hidden=!q||shown>0}return}
   if(id==="jot-q"){const q=e.target.value.trim().toLowerCase();let shown=0;document.querySelectorAll("#view .jot").forEach(c=>{const ok=!q||c.dataset.text.includes(q);c.hidden=!ok;if(ok)shown++});
     document.querySelectorAll("#view .jot-st").forEach(h=>{const l=h.nextElementSibling;h.hidden=!!l&&![...l.children].some(c=>!c.hidden)});const n=$("#jot-none");if(n)n.hidden=shown>0;return}
   if(e.target.classList&&e.target.classList.contains("jw-grow"))jwGrow(e.target);
