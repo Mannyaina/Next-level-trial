@@ -17,7 +17,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261117172748";window.NL_TRIAL_VER=V;
+(function(){var V="20261118173428";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -330,6 +330,18 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .af-undo{margin-left:auto;flex:none;border:0;background:transparent;color:var(--accent);font:700 13.5px inherit;padding:6px;cursor:pointer}
 .af-spin{width:16px;height:16px;flex:none;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:ptrspin .8s linear infinite}
 input.af-new,textarea.af-new{box-shadow:0 0 0 2px #E7C27D;background-color:rgba(231,194,125,.12)}
+.ios-h{display:block;font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);margin:22px 4px 7px}
+.ios-g{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.ios-r{display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:52px;box-sizing:border-box;color:var(--ink);text-decoration:none;background:none;border:0;width:100%;font:inherit;text-align:left}
+.ios-r+.ios-r{border-top:1px solid var(--line)}
+.ios-r .ios-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.ios-r .ios-t b{font-size:17px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ios-r .ios-t span{font-size:14.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ios-r .ios-t span em{font-style:normal;color:var(--ink);margin-right:8px}
+.ios-r .ios-lab{flex:1;font-size:17px}.ios-r .ios-n{font-size:17px;color:var(--muted)}
+.ios-ic{width:26px;height:26px;flex:none;color:var(--accent)}.ios-chev{width:15px;height:15px;flex:none;color:var(--muted);opacity:.6}
+.ios-date{width:42px;height:42px;flex:none;border-radius:11px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:16px;line-height:1}
+.ios-search{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:11px;background:var(--soft);color:var(--muted);margin-top:6px}.ios-search svg{width:17px;height:17px;flex:none}
+.ios-search input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:400 17px inherit;outline:none;height:100%}
+.ios-foot{margin:12px 4px 0;font-size:13.5px;color:var(--muted);line-height:1.45}
 .quiet-line{font-size:14px;color:var(--muted);margin:0}
 .quiet-line b{color:var(--ink)}
 .notes{display:flex;flex-direction:column;gap:14px;font-size:16px;background:var(--surface);border-radius:18px;padding:20px}
@@ -1467,7 +1479,7 @@ const TABS=[["home","Home"],["calendar","Calendar"],["mynotes","Notes"],["events
 const ALLR=["home","calendar","events","news","more","opportunities","notes","prayer","about","leaders","people","members","member","birthdays","give","mynotes","mynote"];
 const LEGACY={"whats-on":"calendar",community:"news",grow:"notes"};
 function readRoute(){let h=decodeURIComponent((location.hash||"").slice(1));if(LEGACY[h])h=LEGACY[h];
-  if(h.startsWith("event-")){S.deepEvent=h.slice(6);h="events"}else if(h.startsWith("notes-")){S.openNote=h.slice(6);h="notes"}else if(h.startsWith("member-")){S.memberId=h.slice(7);h="member"}else if(h.startsWith("mynote-")){S.jotId=h.slice(7);h="mynote"}
+  if(h.startsWith("event-")){S.deepEvent=h.slice(6);h="events"}else if(h.startsWith("notes-")){S.openNote=h.slice(6);S.notesMode="open";h="notes"}else if(h.startsWith("series-")){S.seriesSlug=h.slice(7);S.notesMode="folder";h="notes"}else if(h==="notes"){S.notesMode="index"}else if(h.startsWith("mynotes-")){S.jotFolder=h.slice(8);h="mynotes"}else if(h==="mynotes"){S.jotFolder=""}else if(h.startsWith("member-")){S.memberId=h.slice(7);h="member"}else if(h.startsWith("mynote-")){S.jotId=h.slice(7);h="mynote"}
   S.route=ALLR.includes(h)?h:"home";if((S.route==="leaders"||S.route==="people"||S.route==="birthdays")&&S.ready&&!S.admin)S.route="home"}
 window.addEventListener("hashchange",()=>{if(S.route==="mynote"){const b=(S.mine.book||{})[S.jotId];if(b&&!String(b.title||"").trim()&&!String(b.body||"").trim()){delete S.mine.book[b.id];saveMine(true)}}if($("#sheet-root").innerHTML)closeSheet();S.openNote=null;readRoute();render(true);toTop()});
 
@@ -1956,8 +1968,34 @@ function jotCard(e){const k=e.kind;const col=k==="sermon"?"var(--c-nl)":k==="pra
   return `<a class="jot" href="#mynote-${esc(e.id)}" data-text="${esc(((e.title||"")+" "+(e.body||"")+" "+(e.series||"")).toLowerCase())}" data-kind="${esc(k)}">
    <span class="jot-k" style="color:${col}">${esc(jotLabel(e).toUpperCase())}${k==="prayer"&&e.answered?`<b class="jot-ans">Answered</b>`:""}</span>
    <h3>${esc(head||"Untitled")}</h3>${prev?`<p>${esc(prev)}</p>`:""}</a>`}
+const DAYS_LONG=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const JOT_FOLDERS=[["all","All notes"],["sermon","Sermon notes"],["thought","Thoughts"],["prayer","Prayers"],["answered","Answered prayers"]];
+const jotIn=(e,k)=>k==="all"||(k==="answered"?(e.kind==="prayer"&&e.answered):e.kind===k);
+function jotRow(e){const lines=String(e.body||"").split("\n").map(x=>x.trim()).filter(Boolean);const head=e.title||lines[0]||"New note";const rest=(e.title?lines:lines.slice(1)).join(" ");
+  const when=e.date?(()=>{const d=pd(e.date),t=today(),diff=Math.round((t-d)/864e5);return diff===0?"Today":diff===1?"Yesterday":diff>0&&diff<7?DAYS_LONG[d.getDay()]:d.getDate()+" "+MON[d.getMonth()]})():"";
+  return `<a class="ios-r" href="#mynote-${esc(e.id)}" data-text="${esc(((e.title||"")+" "+(e.body||"")+" "+(e.series||"")).toLowerCase())}"><span class="ios-t"><b>${esc(head)}</b><span><em>${esc(when)}</em>${esc(rest||(e.kind==="prayer"&&e.answered?"Answered":"No additional text"))}</span></span></a>`}
 V.mynotes=()=>{
-  if(!S.uid)return `<div class="ph"><h1>My notes</h1></div><p class="empty">Sign in to keep private notes.</p>`;
+  if(!S.uid)return `<div class="ph"><h1>Notes</h1></div><p class="empty">Sign in to keep private notes.</p>`;
+  const all=jotAll();
+  if(!S.jotFolder){
+    return `<div class="ph jot-h"><h1>Notes</h1><span class="jot-lock">${ic("lock",2)}Only you</span></div>
+    <label class="ios-search">${ic("search",2.4)}<input id="jot-q" type="search" placeholder="Search" aria-label="Search your notes" autocomplete="off"></label>
+    <div id="jot-browse"><span class="ios-h">My folders</span><div class="ios-g">${JOT_FOLDERS.map(([k,l])=>`<a class="ios-r" href="#mynotes-${k}">${FOLDER_IC}<span class="ios-lab">${l}</span><span class="ios-n">${all.filter(e=>jotIn(e,k)).length}</span>${CHEV_IC}</a>`).join("")}</div>
+    <p class="ios-foot">Notes you write in a sermon go into Sermon notes by themselves. Only you can see your notes.</p></div>
+    <div id="jot-results" hidden><span class="ios-h">Results</span><div class="ios-g">${all.map(jotRow).join("")}</div><p class="empty" id="jot-none" hidden>No notes match that.</p></div>
+    <button class="jot-fab" data-act="jotnew" data-k="thought">${ic("plus",2.6)}New note</button>`;
+  }
+  const k=S.jotFolder,label=(JOT_FOLDERS.find(x=>x[0]===k)||["","Notes"])[1],list=all.filter(e=>jotIn(e,k));
+  const wk=new Date();wk.setDate(wk.getDate()-7);const wkI=wk.getFullYear()+"-"+String(wk.getMonth()+1).padStart(2,"0")+"-"+String(wk.getDate()).padStart(2,"0");
+  const recent=list.filter(e=>(e.date||"")>=wkI),older=list.filter(e=>(e.date||"")<wkI);
+  const newKind=k==="all"||k==="answered"?"thought":k;
+  return `<a class="backlink" href="#mynotes" style="margin-bottom:6px">${ic("chev",2)}Notes</a><div class="ph"><h1>${label}</h1></div>
+  ${recent.length?`<span class="ios-h">Previous 7 days</span><div class="ios-g">${recent.map(jotRow).join("")}</div>`:""}
+  ${older.length?`<span class="ios-h">Earlier</span><div class="ios-g">${older.map(jotRow).join("")}</div>`:""}
+  ${!list.length?`<p class="empty">No notes here yet.</p>`:`<p class="ios-foot" style="text-align:center">${list.length} ${list.length===1?"note":"notes"}</p>`}
+  <button class="jot-fab" data-act="jotnew" data-k="${newKind}">${ic("plus",2.6)}New note</button>`;
+};
+V.mynotes_old=()=>{
   const all=jotAll(),f=S.jotF||"all",list=f==="all"?all:all.filter(e=>e.kind===f);
   const wk=new Date();wk.setDate(wk.getDate()-7);const wkI=wk.getFullYear()+"-"+String(wk.getMonth()+1).padStart(2,"0")+"-"+String(wk.getDate()).padStart(2,"0");
   const recent=list.filter(e=>(e.date||"")>=wkI),older=list.filter(e=>(e.date||"")<wkI);
@@ -1975,10 +2013,11 @@ V.mynotes=()=>{
 };
 V.mynote=()=>{
   const e=jotGet(S.jotId);
-  if(!e)return `<a class="backlink" href="#mynotes">${ic("chev",2)}My notes</a><p class="empty">This note isn't here any more.</p>`;
+  const backTo=S.jotFolder?"#mynotes-"+S.jotFolder:"#mynotes",backLab=S.jotFolder?((JOT_FOLDERS.find(x=>x[0]===S.jotFolder)||["","Notes"])[1]):"Notes";
+  if(!e)return `<a class="backlink" href="${backTo}">${ic("chev",2)}${backLab}</a><p class="empty">This note isn't here any more.</p>`;
   const sessN=e.sess?S.col.notes.find(x=>x.id===e.sess):null;
   const sessions=S.col.notes.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,30);
-  return `<div class="jot-top"><a class="backlink" href="#mynotes">${ic("chev",2)}My notes</a><span class="hint" id="jot-saved">${ic("lock",2)} Only you</span></div>
+  return `<div class="jot-top"><a class="backlink" href="${backTo}">${ic("chev",2)}${backLab}</a><span class="hint" id="jot-saved">${ic("lock",2)} Only you</span></div>
   ${e.virtual?`<span class="jot-k" style="color:var(--c-nl)">${esc(jotLabel(e).toUpperCase())}</span><h1 class="jot-title-ro">${esc(e.title)}</h1>`
    :`<div class="chips" role="group" aria-label="Type of note">${JOT_KINDS.map(([k,l])=>`<button class="chip" data-act="jotkind" data-k="${k}" aria-pressed="${e.kind===k}">${l}</button>`).join("")}</div>
      <input id="jot-title" class="jot-title" value="${esc(e.title||"")}" placeholder="Title" aria-label="Title" maxlength="120" autocomplete="off">`}
@@ -2006,18 +2045,43 @@ function renderNoteBody(n){let bi=0;const rev=Number(n.reveal||0);
   return String(n.body||"").split("\n").map(raw=>{const l=raw.trim();if(!l)return "";
     const html=esc(l).replace(/\[\[(.+?)\]\]/g,(m,a)=>{const i=bi++;const shown=i<rev||S.peek[n.id+":"+i];return `<button class="blank ${shown?"shown":""}" data-act="peek" data-k="${esc(n.id)}:${i}" aria-label="${shown?"Answer":"Reveal answer"}">${shown?a:"tap"}</button>`});
     if(l.startsWith("## "))return `<h3>${html.slice(3)}</h3>`;if(l.startsWith("> "))return `<div class="scripture">${html.slice(5)}</div>`;return `<p>${html}</p>`}).join("")}
-V.notes=()=>{
+const FOLDER_IC=`<svg class="ios-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M3 6.5h7l2 2h9V19H3z"/></svg>`;
+const CHEV_IC=`<svg class="ios-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>`;
+const slugOf=t=>String(t||"Sermons").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const shortD=iso=>{if(!iso)return"";const d=pd(iso);return d.getDate()+" "+MON[d.getMonth()]};
+function sessRow(n,withDate){const sub=[n.date?(withDate?DAYS[pd(n.date).getDay()]+" ":"")+shortD(n.date):"",n.scripture||""].filter(Boolean).join(" · ");
+  return `<a class="ios-r" href="#notes-${esc(n.id)}" data-text="${esc(((n.title||"")+" "+(n.series||"")+" "+(n.scripture||"")).toLowerCase())}"><span class="ios-t"><b>${esc(n.title||"Session notes")}</b><span>${esc(sub)}</span></span>${CHEV_IC}</a>`}
+function seriesIndex(){
+  const all=S.col.notes.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  if(!all.length)return `<div class="ph"><h1>Series</h1></div><p class="empty">No sermons have been posted yet.</p>`;
+  const cur=currentNote(),groups={};all.forEach(n=>{const g=n.series||"Sermons";(groups[g]=groups[g]||[]).push(n)});
+  return `<div class="ph"><h1>Series</h1></div>
+  <label class="ios-search">${ic("search",2.4)}<input id="ser-q" type="search" placeholder="Search" aria-label="Search sermons" autocomplete="off"></label>
+  <div id="ser-browse">
+  ${cur?`<span class="ios-h">This week</span><div class="ios-g"><a class="ios-r" href="#notes-${esc(cur.id)}"><span class="ios-date">${cur.date?pd(cur.date).getDate():"·"}</span><span class="ios-t"><b>${esc(cur.title)}</b><span>${esc([cur.date?DAYS[pd(cur.date).getDay()]+" "+shortD(cur.date):"",cur.scripture||""].filter(Boolean).join(" · "))}</span></span>${CHEV_IC}</a></div>`:""}
+  <span class="ios-h">All series</span><div class="ios-g">${Object.entries(groups).map(([g,ns])=>`<a class="ios-r" href="#series-${slugOf(g)}">${FOLDER_IC}<span class="ios-lab">${esc(g)}</span><span class="ios-n">${ns.length}</span>${CHEV_IC}</a>`).join("")}</div>
+  <span class="ios-h">Recent</span><div class="ios-g">${all.slice(0,5).map(n=>sessRow(n,false)).join("")}</div>
+  </div>
+  <div id="ser-results" hidden><span class="ios-h">Results</span><div class="ios-g">${all.map(n=>sessRow(n,false)).join("")}</div><p class="empty" id="ser-none" hidden>No sermons match that.</p></div>`;
+}
+function seriesFolder(){
+  const ns=S.col.notes.filter(n=>slugOf(n.series||"Sermons")===S.seriesSlug).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const name=ns[0]?(ns[0].series||"Sermons"):"Series";
+  return `<a class="backlink" href="#notes" style="margin-bottom:6px">${ic("chev",2)}Series</a><div class="ph"><h1>${esc(name)}</h1><p>${ns.length} ${ns.length===1?"message":"messages"}</p></div>
+  ${ns.length?`<div class="ios-g">${ns.map(n=>sessRow(n,true)).join("")}</div>`:`<p class="empty">Nothing in this series yet.</p>`}`;
+}
+V.notes=()=>{if(S.notesMode==="index")return seriesIndex();if(S.notesMode==="folder")return seriesFolder();
   const all=S.col.notes.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));const open=S.openNote?all.find(n=>n.id===S.openNote)||currentNote():currentNote();
   if(!open)return `<div class="ph"><h1>Series Notes</h1></div><p class="empty">No notes have been posted yet.</p>`;
   const bc=blankCount(open),rev=Math.min(Number(open.reveal||0),bc);const myNote=(S.mine.notes||{})[open.id]||"";
   const groups={};all.forEach(n=>{(groups[n.series||"Sermons"]=groups[n.series||"Sermons"]||[]).push(n)});
-  return `<div class="ph"><span class="hint" style="font-weight:700">${esc(open.series||"Series")}${open.date?" · "+pd(open.date).getDate()+" "+MON[pd(open.date).getMonth()]:""}</span><h1 style="margin-top:2px">${esc(open.title)}</h1><button class="edit" style="font-size:13.5px;margin-top:6px" data-act="share-note" data-id="${esc(open.id)}">Share these notes</button>${isLeader()?` · <button class="edit" style="font-size:13.5px;margin-top:6px" data-act="edit" data-col="notes" data-id="${esc(open.id)}">Edit</button>`:""}</div>
+  return `<a class="backlink" href="#series-${slugOf(open.series||"Sermons")}">${ic("chev",2)}${esc(open.series||"Sermons")}</a><div class="ph"><span class="hint" style="font-weight:700">${esc(open.series||"Series")}${open.date?" · "+pd(open.date).getDate()+" "+MON[pd(open.date).getMonth()]:""}</span><h1 style="margin-top:2px">${esc(open.title)}</h1><button class="edit" style="font-size:13.5px;margin-top:6px" data-act="share-note" data-id="${esc(open.id)}">Share these notes</button>${isLeader()?` · <button class="edit" style="font-size:13.5px;margin-top:6px" data-act="edit" data-col="notes" data-id="${esc(open.id)}">Edit</button>`:""}</div>
   ${isLeader()&&bc?`<section class="opp" style="gap:10px"><div class="st" style="font-size:20px">Live reveal<span class="hint">${rev} of ${bc} points shown to everyone</span></div><div class="row"><button class="btn" data-act="reveal" data-id="${esc(open.id)}" data-n="1" ${rev>=bc?"disabled":""}>Reveal next point</button><button class="btn quiet" data-act="reveal" data-id="${esc(open.id)}" data-n="all">Reveal all</button><button class="btn quiet" data-act="reveal" data-id="${esc(open.id)}" data-n="0">Reset</button>${editLink("notes",open.id)}</div></section>`:""}
   ${bc?`<div class="progress" aria-label="${rev} of ${bc} points revealed"><span style="width:${Math.round(rev/bc*100)}%"></span></div>`:""}
   <section class="notes">${open.scripture?`<div class="scripture">${esc(open.scripture)}</div>`:""}${renderNoteBody(open)}</section>
   ${(open.files||[]).length?`<section class="sect"><div class="st" style="font-size:20px">Handouts and slides${isLeader()?`<button class="edit" data-act="edit" data-col="notes" data-id="${esc(open.id)}">Change files</button>`:""}</div>${filesHTML(open.files)}</section>`:""}
   ${S.uid?`<label class="f" for="mynote">My notes · only you see these<textarea id="mynote" data-note="${esc(open.id)}" placeholder="What stood out to you?">${esc(myNote)}</textarea></label><div class="jot-tools">${JOT_INS.map(([k,l])=>`<button class="chip" data-act="jotins" data-k="${k}">${l}</button>`).join("")}<a class="jot-all" href="#mynotes">All my notes</a></div>`:""}
-  <section class="sect"><div class="st">All sessions</div>${Object.entries(groups).map(([g,ns])=>`<span class="hint" style="font-weight:700">${esc(g)}</span><div class="rows">${ns.map(n=>`<button class="r" data-act="opennote" data-id="${esc(n.id)}"><span class="dt"><small>${n.date?MON[pd(n.date).getMonth()]:"—"}</small><b>${n.date?pd(n.date).getDate():"·"}</b></span><span><h3>${esc(n.title)}</h3><p>${esc(n.scripture||"")}</p></span>${n.id===open.id?'<span class="pill going">Open</span>':`<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${P.chev}</svg>`}</button>`).join("")}</div>`).join("")}</section>`;
+  `;
 };
 V.prayer=()=>{
   const mine=S.uid?(mySelf("prayer").items||[]):[];const myR=S.uid?(mySelf("reacts").posts||{}):{};
@@ -2392,15 +2456,15 @@ document.addEventListener("click",async e=>{
   if(a==="jotans"){const e=(S.mine.book||{})[S.jotId];if(!e)return;e.answered=!e.answered;e.upd=Date.now();saveMine();render(true);return}
   if(a==="jotins"){const ta=$("#jot-body")||$("#mynote");if(!ta)return;const ins=JOT_TXT[d.k]||"";const p=ta.selectionStart!=null&&document.activeElement===ta?ta.selectionStart:ta.value.length;
     const before=ta.value.slice(0,p),pre=before&&!before.endsWith("\n")?"\n":"";ta.value=before+pre+ins+ta.value.slice(p);const c=p+pre.length+ins.length;ta.focus();try{ta.setSelectionRange(c,c)}catch(err){}ta.dispatchEvent(new Event("input",{bubbles:true}));return}
-  if(a==="jotdel"){if(b.dataset.sure!=="1"){b.dataset.sure="1";const was=b.textContent;b.textContent="Tap again to delete";setTimeout(()=>{if(b.isConnected){b.dataset.sure="";b.textContent=was}},3000);return}
-    const e=jotGet(S.jotId);if(!e)return;if(e.virtual){delete S.mine.notes[e.sess]}else{delete S.mine.book[e.id]}saveMine(true);toast("Deleted");location.hash="mynotes";return}
+  if(a==="jotdel"){const goBack=S.jotFolder?"mynotes-"+S.jotFolder:"mynotes";if(b.dataset.sure!=="1"){b.dataset.sure="1";const was=b.textContent;b.textContent="Tap again to delete";setTimeout(()=>{if(b.isConnected){b.dataset.sure="";b.textContent=was}},3000);return}
+    const e=jotGet(S.jotId);if(!e)return;if(e.virtual){delete S.mine.notes[e.sess]}else{delete S.mine.book[e.id]}saveMine(true);toast("Deleted");location.hash=goBack;return}
   if(a==="jotshare"){const e=jotGet(S.jotId);if(!e)return;const txt=(e.body||e.title||"").trim();location.hash="prayer";setTimeout(()=>{const p=$("#pr-text");if(p){p.value=txt.slice(0,1000);p.focus();toast("Check it, then tap Send")}},250);return}
   if(a==="bdsave"){const g=id=>document.getElementById(id);const body=Object.assign(bcfg(),{auto:g("bc-auto").checked,time:g("bc-time").value||"08:00",remind:g("bc-remind").checked,rtime:g("bc-rtime").value||"19:00",push:g("bc-push").checked,tpl:(g("bc-tpl").value.trim()||BCFG_DEF.tpl).slice(0,1000),updatedAt:Date.now()});
     const i=S.col.settings.findIndex(x=>x.id==="birthdays");const row=Object.assign({id:"birthdays"},body);if(i>=0)S.col.settings[i]=row;else S.col.settings.push(row);setDoc("settings/birthdays",body).then(()=>toast(body.auto?"Saved. Birthdays will post at "+ft(body.time):"Saved"));render();return}
   if(a==="nk"){S.newsKind=d.k;render();return}
   if(a==="oc"){S.oppCat=d.k;render();return}
   if(a==="celeall"){S.celeAll=!S.celeAll;render();return}
-  if(a==="opennote"){S.openNote=d.id;render(true);toTop();return}
+  if(a==="opennote"){location.hash="notes-"+d.id;return}
   if(a==="peek"){S.peek[d.k]=true;render();return}
   if(a==="reveal"){const n=S.col.notes.find(x=>x.id===d.id);if(!n)return;const bc=blankCount(n);const v=d.n==="0"?0:Math.min(bc,Number(n.reveal||0)+1);const body=Object.assign({},n,{reveal:v,updatedAt:Date.now()});delete body.id;n.reveal=v;render();setDoc("notes/"+d.id,body);return}
   if(a==="share-occ"){const o=findOcc(d.k,d.d);if(!o)return;shareOut(occShareText(o),linkFor(o.src==="event"?"event-"+o.id:"calendar"));return}
@@ -2455,6 +2519,8 @@ document.addEventListener("submit",async e=>{if(e.target.id!=="pp-add")return;e.
     showCodeSheet("Setup code for "+(nm||em),"Send this to them. It works once, and it's their only way to create their login.",code,setupMessage(nm,code))}
   catch(err){toast(err&&err.code==="exists"?"That email already has an account.":"Couldn't add them. Try again.")}});
 document.addEventListener("input",e=>{const id=e.target.id;
+  if(id==="ser-q"||(id==="jot-q"&&$("#jot-results"))){const p=id==="ser-q"?"ser":"jot",q=e.target.value.trim().toLowerCase(),b=$("#"+p+"-browse"),r=$("#"+p+"-results");let shown=0;
+    if(b)b.hidden=!!q;if(r){r.hidden=!q;r.querySelectorAll(".ios-r").forEach(c=>{const ok=!q||c.dataset.text.includes(q);c.hidden=!ok;if(ok)shown++});const n=$("#"+p+"-none");if(n)n.hidden=!q||shown>0}return}
   if(id==="jot-q"){const q=e.target.value.trim().toLowerCase();let shown=0;document.querySelectorAll("#view .jot").forEach(c=>{const ok=!q||c.dataset.text.includes(q);c.hidden=!ok;if(ok)shown++});
     document.querySelectorAll("#view .jot-st").forEach(h=>{const l=h.nextElementSibling;h.hidden=!!l&&![...l.children].some(c=>!c.hidden)});const n=$("#jot-none");if(n)n.hidden=shown>0;return}
   if(id==="jot-body"||id==="jot-title"){const e2=jotGet(S.jotId);if(!e2)return;
