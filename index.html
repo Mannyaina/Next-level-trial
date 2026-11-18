@@ -17,7 +17,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261118173625";window.NL_TRIAL_VER=V;
+(function(){var V="20261118174007";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -1658,6 +1658,19 @@ async function autoFill(file,r,col,sc,quiet){const st=r.querySelector("#ef-auto"
   st.innerHTML=`${ic("check",2)}<span><b>Filled in from ${esc(file.name)}:</b> ${filled.map(k=>AF_LABEL[k]||k).join(", ")}. Check them and change anything before posting.</span><button type="button" class="af-undo">Undo</button>`;
   st.querySelector(".af-undo").addEventListener("click",()=>{Object.entries(before).forEach(([k,v])=>{const el=r.querySelector("#f-"+k);if(!el)return;if(el.type==="checkbox")el.checked=v;else{el.value=v;el.classList.remove("af-new")}});st.hidden=true});
   const firstEl=r.querySelector(".af-new");if(firstEl&&!quiet)firstEl.scrollIntoView({block:"center",behavior:"smooth"})}
+/* Lists carry on by themselves in notes: start a line with - • * → -> > 1. a) and pressing return starts the next one.
+   Return on an empty list line ends the list. */
+const LIST_RE=/^(\s*)(?:(\d+)([.)])|([a-zA-Z])([.)])|(->|=>|[-*•–→>▸➤✓✗☐]))(\s+)/;
+function listNext(line){const m=LIST_RE.exec(line);if(!m)return null;const [all,ind,num,np,let_,lp,sym,sp]=m;
+  const empty=!line.slice(all.length).trim();let next;
+  if(num)next=ind+(+num+1)+np+sp;else if(let_){const c=let_.charCodeAt(0),z=let_===let_.toUpperCase()?90:122;next=ind+(c<z?String.fromCharCode(c+1):let_)+lp+sp}
+  else next=ind+(sym==="✓"||sym==="✗"?"☐":sym)+sp;
+  return {empty,prefixLen:all.length,next}}
+document.addEventListener("keydown",e=>{const ta=e.target;if(e.key!=="Enter"||e.shiftKey||e.isComposing||!ta||(ta.id!=="jot-body"&&ta.id!=="mynote"))return;
+  const st=ta.selectionStart,en=ta.selectionEnd;if(st!==en)return;const v=ta.value,ls=v.lastIndexOf("\n",st-1)+1,line=v.slice(ls,st);const r=listNext(line);if(!r)return;
+  e.preventDefault();
+  if(r.empty){ta.setRangeText("",ls,st,"end")}else{ta.setRangeText("\n"+r.next,st,en,"end")}
+  ta.dispatchEvent(new Event("input",{bubbles:true}))});
 function dlUrl(u,n){return u+(u.includes("?")?"&":"?")+"download="+encodeURIComponent(n||"file")}
 function fileSheet(u,n,t){const img=/^image\//.test(t);
   openSheet(`<div class="sh-head"><h2 style="font-size:22px;overflow-wrap:anywhere">${esc(n||"File")}</h2><button class="icon-b" data-act="close" aria-label="Close">${ic("plus",2)}</button></div>
@@ -1952,7 +1965,7 @@ V.give=()=>{const c=gcfg(),ready=c.open&&(c.acct||c.link),lead=S.admin;
 
 /* ---------- My notes: private notebook (only the writer can read it) ---------- */
 const JOT_KINDS=[["sermon","Sermon"],["thought","Thought"],["prayer","Prayer"]];
-const JOT_INS=[["take","+ Takeaway"],["scr","+ Scripture"],["pray","+ Prayer"],["dot","• List"]];
+const JOT_INS=[["take","+ Takeaway"],["scr","+ Scripture"],["pray","+ Prayer"]];
 const JOT_TXT={take:"Takeaway: ",scr:"Scripture: ",pray:"Prayer: ",dot:"• "};
 function jotAll(){
   const out=Object.values(S.mine.book||{}).filter(Boolean).map(e=>Object.assign({},e));
