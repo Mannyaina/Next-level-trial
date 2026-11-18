@@ -17,7 +17,7 @@
 <body>
 <script>
 /* Trial: always show the newest version. GitHub lets phones keep a page for 10 minutes, so check for a newer one and refresh. */
-(function(){var V="20261118180212";window.NL_TRIAL_VER=V;
+(function(){var V="20261118180739";window.NL_TRIAL_VER=V;
   function check(){fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){t=(t||"").trim();
     if(!t||t===V)return;var k="nl.updatedTo";try{if(sessionStorage.getItem(k)===t)return;sessionStorage.setItem(k,t);sessionStorage.setItem("nl.splash","1")}catch(e){}
     fetch(location.pathname,{cache:"reload"}).catch(function(){}).then(function(){location.reload()})}).catch(function(){})}
@@ -314,7 +314,8 @@ details.fold .rows{border-radius:0 0 18px 18px;border-top:1px solid var(--line)}
 .jw textarea.jw-grow{border-radius:0;box-shadow:none;display:block;width:100%;box-sizing:border-box;border:0;outline:none;resize:none;background:transparent;color:var(--ink);padding:4px 0;font:400 17px/1.55 var(--body,inherit);min-height:28px;overflow:hidden}
 .jw input.jot-title,.jw textarea.jw-grow{caret-color:var(--accent)}
 .jw textarea.jw-grow::placeholder{color:var(--muted);opacity:.75}
-.jw-main{min-height:38vh}
+.jw-main{min-height:0}
+.jw{min-height:70vh}
 .jw-extra{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
 .jw-del{margin-top:26px;background:none;border:0;padding:0;font:600 14px var(--body,inherit);color:var(--warn,#B3261E);cursor:pointer}
 .jw-tools{position:fixed;left:0;right:0;bottom:var(--kb,0px);z-index:30;display:flex;align-items:center;justify-content:space-around;gap:4px;min-height:46px;
@@ -328,7 +329,9 @@ html.kbopen .jw-tools{padding-bottom:0}
 .jw-chips::-webkit-scrollbar{display:none}
 .jw-tools .jw-chips button{flex:none;height:34px;min-width:0;padding:0 12px 0 10px;border-radius:999px;background:var(--accent-soft,var(--soft));color:var(--accent);display:flex;align-items:center;gap:6px;font:700 14px var(--body,inherit)}
 .jw-tools .jw-chips button svg{width:16px;height:16px}
-@media (max-width:959px){html:not(.kbopen) .jw-tools{transform:translateY(110%);pointer-events:none}}
+@media (max-width:959px){html:not(.jwtyping) .jw-tools{transform:translateY(110%);pointer-events:none}}
+html.ios .jw-tools .jw-kb{display:none}
+.jw-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-left:-4px;margin-right:-4px;padding:0 4px}
 .jw-tools{transition:transform .18s ease}
 @media (min-width:960px){.jw-tools{position:static;justify-content:flex-start;border:1px solid var(--line);border-radius:14px;margin-top:20px}}
 .jw-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none;margin:4px 0 14px}
@@ -2621,8 +2624,12 @@ document.addEventListener("submit",async e=>{if(e.target.id!=="pp-add")return;e.
   catch(err){toast(err&&err.code==="exists"?"That email already has an account.":"Couldn't add them. Try again.")}});
 document.addEventListener("change",e=>{const id=e.target.id;
   if(id==="jot-kindsel"){const b=(S.mine.book||{})[S.jotId];if(!b)return;b.kind=e.target.value;b.upd=Date.now();saveMine();render(true);return}});
-function jwGrow(t){(t?[t]:document.querySelectorAll(".jw-grow")).forEach(x=>{x.style.height="auto";x.style.height=Math.max(x.scrollHeight,x.classList.contains("jw-main")?Math.round(innerHeight*.38):28)+"px"})}
-document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("jw-grow"))S.jwLast=e.target});
+function jwGrow(t){(t?[t]:document.querySelectorAll(".jw-grow")).forEach(x=>{x.style.height="auto";x.style.height=Math.max(x.scrollHeight,28)+"px"})}
+document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("jw-grow"))S.jwLast=e.target;if(e.target.closest&&e.target.closest(".jw")&&/^(INPUT|TEXTAREA)$/.test(e.target.tagName))document.documentElement.classList.add("jwtyping")});
+document.addEventListener("focusout",()=>setTimeout(()=>{const ae=document.activeElement;if(!(ae&&ae.closest&&ae.closest(".jw")&&/^(INPUT|TEXTAREA)$/.test(ae.tagName)))document.documentElement.classList.remove("jwtyping")},60));
+if(/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1))document.documentElement.classList.add("ios");
+/* Tap anywhere on the empty page under a note to carry on writing at the end */
+document.addEventListener("click",e=>{if(S.route!=="mynote"||!e.target.closest("main")||e.target.closest("input,textarea,button,a,select,label,.jw-tools,.jw-card,.jw-bar"))return;const b=$("#jot-body")||[...document.querySelectorAll(".jw .jw-s")].pop();if(!b)return;b.focus();try{b.setSelectionRange(b.value.length,b.value.length)}catch(err){}});
 document.addEventListener("pointerdown",e=>{if(e.target.closest(".jw-tools button"))e.preventDefault()});
 /* Tap the box at the start of a checklist line to tick it */
 document.addEventListener("click",e=>{const ta=e.target;if(!ta.classList||!ta.classList.contains("jw-grow")||ta.selectionStart!==ta.selectionEnd)return;const v=ta.value,p=ta.selectionStart,ls=v.lastIndexOf("\n",p-1)+1;
